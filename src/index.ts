@@ -1,4 +1,4 @@
-export { PaypalClient } from "./client.js";
+export { PayPalServerSdkClient } from "./client.js";
 export { DEFAULT_CLIENT_OPTIONS, type ClientOptions } from "./client-options.js";
 
 export type { OAuth2ClientCredentials } from "./core/auth/credentials.js";
@@ -783,7 +783,7 @@ export { iDealPaymentObjectSchema, type IDealPaymentObject } from "./models/idea
 export { iDealPaymentRequestSchema, type IDealPaymentRequest } from "./models/ideal-payment-request.js";
 
 export {
-  CoreError as PaypalError,
+  CoreError as PayPalServerSdkError,
   ConnectionError,
   TimeoutError,
   AbortError,

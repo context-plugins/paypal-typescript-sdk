@@ -1,16 +1,16 @@
 <!-- Generated file — do not edit; regenerated with the SDK. -->
 
-# SDK map — Paypal (TypeScript)
+# SDK map — PayPal Server SDK (TypeScript)
 
 > A generated table of contents for this SDK. Consult this map and its sub-pages to learn signatures, request-field placement, error types and server wiring **by lookup**. Model shapes are *not* duplicated here — the map names the file declaring each type and the schema value exported beside it; read the shape there. The compiler is the backstop: a wrong name fails to build.
 
 |  |  |
 | --- | --- |
-| SDK display name | Paypal |
-| Package | `paypal` |
+| SDK display name | PayPal Server SDK |
+| Package | `pay-pal-server-sdk` |
 | Package version | `2.29` |
 | API spec version | `2.29` |
-| Import specifier | `paypal` — the package root is the **only** entry. Deep imports (`paypal/models/...`) do not resolve; the `exports` map exposes `.` and `./package.json` and nothing else |
+| Import specifier | `pay-pal-server-sdk` — the package root is the **only** entry. Deep imports (`pay-pal-server-sdk/models/...`) do not resolve; the `exports` map exposes `.` and `./package.json` and nothing else |
 | Module format | dual ESM + CommonJS, as folder dialects (`dist/esm`, `dist/commonjs`), each with its own `package.json` marker. No `.mjs`, `.cjs`, `.d.mts` or `.d.cts` files exist |
 | Node floor | `>=20` (`engines.node`) |
 | TypeScript floor | a resolver that reads `exports` (4.7+), plus whatever the pinned `zod` requires — `zod@4` needs 5.5 or later. The public `.d.ts` chain reaches `zod/v4-mini`, so this is a real constraint rather than a build-tool version |
@@ -19,22 +19,22 @@
 
 Staleness check: the API spec version above changes when the SDK is regenerated from a new spec. If a lookup here fails to compile, trust the compiler and re-read the source file named in the row.
 
-All `Source` paths on this map and its sub-pages are relative to the **SDK root** — the directory holding this file and `package.json` — never to the page that carries them: a page two directories deep writes exactly what a page at the root would. The package ships its `src/` tree, so the same paths resolve inside `node_modules/paypal/` too. An import specifier ending `.js` inside that source is the NodeNext spelling of the sibling `.ts` file.
+All `Source` paths on this map and its sub-pages are relative to the **SDK root** — the directory holding this file and `package.json` — never to the page that carries them: a page two directories deep writes exactly what a page at the root would. The package ships its `src/` tree, so the same paths resolve inside `node_modules/pay-pal-server-sdk/` too. An import specifier ending `.js` inside that source is the NodeNext spelling of the sibling `.ts` file.
 
 ---
 
 ## Getting a client
 
 ```ts
-import { PaypalClient, ServerEnvironment } from "paypal";
+import { PayPalServerSdkClient, ServerEnvironment } from "pay-pal-server-sdk";
 
-const client = new PaypalClient({
+const client = new PayPalServerSdkClient({
   serverEnvironment: ServerEnvironment.Sandbox,
   oauth2: { clientId: "YOUR_CLIENT_ID", clientSecret: "YOUR_CLIENT_SECRET" },
 });
 ```
 
-The only constructor is `new PaypalClient(clientOptions: Partial<ClientOptions> = {})`, so `new PaypalClient()` is valid. Resources are memoized lazy getters on the client — `client.orders`, `client.payments`, `client.vault`, `client.transactionSearch`, `client.subscriptions` — and their classes are exported only for their merged namespaces and for `instanceof`; their constructors take engine internals that are not exported, so reach a resource only through its getter.
+The only constructor is `new PayPalServerSdkClient(clientOptions: Partial<ClientOptions> = {})`, so `new PayPalServerSdkClient()` is valid. Resources are memoized lazy getters on the client — `client.orders`, `client.payments`, `client.vault`, `client.transactionSearch`, `client.subscriptions` — and their classes are exported only for their merged namespaces and for `instanceof`; their constructors take engine internals that are not exported, so reach a resource only through its getter.
 
 All `ClientOptions` fields (source: `src/client-options.ts`; every field is `readonly`):
 
@@ -81,7 +81,7 @@ The entire per-request surface is the optional second argument of every operatio
 Operations are **throw-based**, and failures fall into **two disjoint families**. Neither is `instanceof` the other, so the two branches can never overlap and a complete `catch` needs both. `instanceof` is reliable **within one dialect**: a process that loads both — `import` in one file, `require` in another — gets two independent copies of every error class, and `instanceof` across that boundary is `false`. Narrow on `err.kind` or on `err.payload.kind` there, or on `err.name`, which is stable across copies.
 
 - **Family A — the API answered with an error status.** The call rejects with `ResponseError`, or with a subclass of it where the spec declared error bodies for that operation. `err.payload` is a discriminated union whose `kind` names the **response schema the spec declared**, *not* the status code — so two statuses sharing one schema share one arm, and `"undeclared"` is an always-present arm carrying the raw bytes.
-- **Family B — no usable response was produced.** The call rejects with a member of the `PaypalError` set. `PaypalError` is **abstract**: use it for `instanceof`, never construct it.
+- **Family B — no usable response was produced.** The call rejects with a member of the `PayPalServerSdkError` set. `PayPalServerSdkError` is **abstract**: use it for `instanceof`, never construct it.
 
 Core types (public members with their declared types; all are `readonly`):
 
@@ -90,7 +90,7 @@ Core types (public members with their declared types; all are `readonly`):
 | `ResponseError<P>` | `status: number` · `headers: Headers` · `payload: ErrorPayload<P>`, and a `message` of the form `<status> <statusText>` | `src/core/response-error.ts` |
 | `Declared<K, B>` | `kind: K` · `body: B` | `src/core/response-error.ts` |
 | `ErrorPayload<P>` | `P` or `{ kind: "undeclared"; rawBody: ArrayBuffer }` | `src/core/response-error.ts` |
-| `PaypalError` (abstract; declared as `CoreError`) | `kind: ErrorKind` · `message` · `cause` | `src/core/errors.ts` |
+| `PayPalServerSdkError` (abstract; declared as `CoreError`) | `kind: ErrorKind` · `message` · `cause` | `src/core/errors.ts` |
 | `SchemaError` | `kind: "schema"` · `rawBody: unknown` | `src/core/validation/schema-error.ts` |
 | `AuthError` | `kind: "auth"` · `failures: readonly unknown[]` | `src/core/errors.ts` |
 | `ApiResult<T, E>` | on success `{ ok: true; status; headers; value: T }`, on failure `{ ok: false; status; headers; errorMessage: string; error }` — `error` carries the **payload**, not the error object | `src/core/api-promise.ts` |
@@ -106,7 +106,7 @@ try {
   if (err instanceof ResponseError) {
     // TODO: the API answered with an error status — read err.status and err.payload
   }
-  if (err instanceof PaypalError) {
+  if (err instanceof PayPalServerSdkError) {
     // TODO: no usable response was produced — err.kind says which
   }
 }
@@ -169,7 +169,7 @@ Each page below carries one block per operation, with bullets in the fixed order
 **Shapes live only in the source.** Every module under `src/models/` declares exactly one model type and the schema value beside it, and both are re-exported from the package root. So there are two facts per type, and the map gives both: the **names you import** and the **file you read**.
 
 ```ts
-import { type AvsCode, avsCodeSchema } from "paypal";
+import { type AvsCode, avsCodeSchema } from "pay-pal-server-sdk";
 ```
 
 Take the pair from an operation's **Type sources** table. **Do not derive the path from the type name** — the transform is not reversible in general, and the table is the authority. There is no default export.
@@ -1162,7 +1162,7 @@ The facts that change what you type, and the floors that decide whether the pack
 
 |  |  |
 | --- | --- |
-| One entry, two dialects | `import` resolves `dist/esm`, `require` resolves `dist/commonjs`, both through the single `.` export. In a TypeScript CommonJS file the typed spelling is `import sdk = require("paypal")`; a plain `require` destructure works at run time but yields no types. `instanceof` is reliable **within** one dialect — if your app loads both, the two copies declare separate error classes |
+| One entry, two dialects | `import` resolves `dist/esm`, `require` resolves `dist/commonjs`, both through the single `.` export. In a TypeScript CommonJS file the typed spelling is `import sdk = require("pay-pal-server-sdk")`; a plain `require` destructure works at run time but yields no types. `instanceof` is reliable **within** one dialect — if your app loads both, the two copies declare separate error classes |
 | Consumer compiler settings | Under `exactOptionalPropertyTypes`, **omit or spread** an absent optional rather than assigning `undefined` to it. Under `verbatimModuleSyntax`, names that carry no runtime value (the options types, every model type) must be imported with `import type` |
 | Required globals, and only these | Always: `fetch` (or a replacement passed as the `fetch` option), `AbortController`, `Headers`, `URL`, `setTimeout` and `clearTimeout`, `JSON`, `BigInt`. Auth adds more, each reached only once the credential needing it is configured. `TextEncoder` and `btoa` build every `Authorization: Basic` value, sent on every OAuth2 token request, whose client credentials travel as Basic by default. |
 | Values that cross the boundary | `Date` for `date-time`, `string` for `date`, `ArrayBuffer` for an undeclared error body, `Headers` on a result and on a thrown `ResponseError`. The engine also carries a `bigint` int64 path and a base64 `bytes()` codec, reached only where a model uses them |

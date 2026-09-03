@@ -8,7 +8,7 @@ import { TransactionSearch } from "./resources/transaction-search.js";
 import { Vault } from "./resources/vault.js";
 import { buildServers, type Servers } from "./servers.js";
 
-export class PaypalClient {
+export class PayPalServerSdkClient {
   readonly #rawClient: RawClient;
   readonly #servers: Servers;
   readonly #auth: AuthSchemes;

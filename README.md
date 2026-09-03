@@ -1,8 +1,8 @@
-# Paypal
+# PayPal Server SDK
 
 [![Built with APIMatic][apimatic-badge]][apimatic-url] [![License: MIT][license-badge]][license-url]
 
-The Paypal SDK for TypeScript provides typed access to the Paypal REST APIs from Node.js and the browser.
+The PayPal Server SDK SDK for TypeScript provides typed access to the PayPal Server SDK REST APIs from Node.js and the browser.
 
 > [!TIP]
 > **Looking for a specific signature, request field, model, enum or error type?** This SDK ships a generated, machine-readable **[SDK map](sdk-map.md)** — a lookup index of the whole TypeScript surface. Consult it **before** grepping or scanning the source tree; it answers most contract questions directly and, where a source file is genuinely needed, names the exact one to open. Details under [SDK map](#sdk-map).
@@ -37,9 +37,9 @@ npm install <path-to-sdk>
 Create one client and reuse it. Configure its behaviour through [ClientOptions](src/client-options.ts).
 
 ```ts
-import { PaypalClient, ServerEnvironment } from "paypal";
+import { PayPalServerSdkClient, ServerEnvironment } from "pay-pal-server-sdk";
 
-const client = new PaypalClient({
+const client = new PayPalServerSdkClient({
   serverEnvironment: ServerEnvironment.Sandbox,
   oauth2: { clientId: "YOUR_CLIENT_ID", clientSecret: "YOUR_CLIENT_SECRET" },
 });
@@ -52,9 +52,9 @@ Every option has a default — see `DEFAULT_CLIENT_OPTIONS` in the same module. 
 The package ships both dialects from a single entry, so `require` works with full types. In a TypeScript CommonJS file use the `import ... = require(...)` form — a plain destructuring `require` runs fine but gives you `any`.
 
 ```ts
-import sdk = require("paypal");
+import sdk = require("pay-pal-server-sdk");
 
-const client = new sdk.PaypalClient({
+const client = new sdk.PayPalServerSdkClient({
   serverEnvironment: sdk.ServerEnvironment.Sandbox,
   oauth2: { clientId: "YOUR_CLIENT_ID", clientSecret: "YOUR_CLIENT_SECRET" },
 });

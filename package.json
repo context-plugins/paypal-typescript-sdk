@@ -1,5 +1,5 @@
 {
-  "name": "paypal",
+  "name": "pay-pal-server-sdk",
   "version": "2.29",
   "description": "### Important Notes\n - **Available Features:** This SDK currently contains only 5 of PayPal's API endpoints. Additional endpoints and functionality will be added in the future.\n \n ## Information\n The PayPal Server SDK provides integration access to the PayPal REST APIs. The API endpoints are divided into distinct controllers:\n - Orders Controller: [Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)\n - Payments Controller: [Payments API v2](https://developer.paypal.com/docs/api/payments/v2)\n - Vault Controller: [Payment Method Tokens API v3](https://developer.paypal.com/docs/api/payment-tokens/v3/) *Available in the US only.*\n - Transaction Search Controller: [Transaction Search API v1](https://developer.paypal.com/docs/api/transaction-search/v1/)\n - Subscriptions Controller: [Subscriptions API v1](https://developer.paypal.com/docs/api/subscriptions/v1/)",
   "type": "module",
@@ -48,7 +48,7 @@
   "scripts": {
     "prepare": "tshy",
     "build": "tshy",
-    "smoke": "node -e \"require('paypal')\" && node --input-type=module -e \"import('paypal')\"",
+    "smoke": "node -e \"require('pay-pal-server-sdk')\" && node --input-type=module -e \"import('pay-pal-server-sdk')\"",
     "typecheck": "tsc --noEmit",
     "typecheck:dom": "tsc --noEmit -p tsconfig.dom.json",
     "lint": "oxlint --type-aware --max-warnings=0 src",

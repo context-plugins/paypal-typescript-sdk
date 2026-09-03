@@ -1,6 +1,6 @@
 # Reference
 
-> Source: [PaypalClient](src/client.ts)
+> Source: [PayPalServerSdkClient](src/client.ts)
 
 ## Orders
 
