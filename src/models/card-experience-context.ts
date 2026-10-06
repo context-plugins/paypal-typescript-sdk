@@ -1,8 +1,11 @@
 import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 
+/** Customizes the payer experience during the 3DS Approval for payment. */
 export type CardExperienceContext = {
+  /** Describes the URL. */
   returnUrl?: string;
+  /** Describes the URL. */
   cancelUrl?: string;
 };
 

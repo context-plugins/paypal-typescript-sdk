@@ -4,10 +4,19 @@ import { cardCustomerInformationSchema, type CardCustomerInformation } from "./c
 import { linkDescriptionSchema, type LinkDescription } from "./link-description.js";
 import { vaultStatusSchema, type VaultStatus } from "./vault-status.js";
 
+/** The details about a saved Card payment source. */
 export type CardVaultResponse = {
+  /** The PayPal-generated ID for the saved payment source. */
   id?: string;
+  /**
+   * The vault status.
+   *
+   * @deprecated
+   */
   status?: VaultStatus;
+  /** An array of request-related HATEOAS links. */
   links?: LinkDescription[];
+  /** The details about a customer in PayPal's system of record. */
   customer?: CardCustomerInformation;
 };
 

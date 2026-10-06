@@ -1,128 +1,168 @@
-import type { ApiRequest, RequestOptions, RawClientOptions, FetchLike } from "./api-request.js";
-import { CoreError, ConnectionError, TimeoutError, AbortError, SdkError } from "./errors.js";
-import { decodeErrorPayload, type AnyResponseError, type ResponseHandler } from "./response-error.js";
+import type { ApiRequest, HttpMethod, RequestOptions, RawClientOptions } from "./api-request.js";
+import { CoreError, ConnectionError, DecodeError, TimeoutError } from "./errors.js";
+import { decodeErrorPayload, type AnyApiError, type ResponseHandler } from "./api-error.js";
 import { decodeResponse } from "./response-decoder.js";
 import { ApiPromise, type RequestOutcome } from "./api-promise.js";
 import { buildBody } from "./request-body.js";
-import { buildUrl } from "./url.js";
-import { buildHeaders } from "./headers.js";
-
-const DEFAULT_TIMEOUT_MS = 100_000;
-const MAX_TIMEOUT_MS = 2_147_483_647;
+import { RetryPolicy } from "./retry.js";
+import { UrlBuilder } from "./url.js";
+import { HeadersBuilder } from "./headers.js";
+import { authenticateRequest } from "./auth/schemes.js";
 
 export class RawClient {
   readonly #config: RawClientOptions;
-  readonly #fetch: FetchLike;
+  readonly #urlBuilder: UrlBuilder;
+  readonly #headersBuilder: HeadersBuilder;
 
   constructor(config: RawClientOptions) {
-    const fetchImpl = config.fetch ?? globalThis.fetch;
-    if (typeof fetchImpl !== "function") {
-      throw new SdkError({ message: "No fetch implementation available; pass ClientOptions.fetch." });
-    }
     this.#config = config;
-    this.#fetch = fetchImpl;
+    this.#urlBuilder = new UrlBuilder(config);
+    this.#headersBuilder = new HeadersBuilder(config);
   }
 
-  execute<T, E extends AnyResponseError>(
-    apiRequest: ApiRequest,
+  execute<T, E extends AnyApiError, Path extends string>(
+    apiRequest: ApiRequest<Path>,
     responseHandler: ResponseHandler<T, E>,
     options?: RequestOptions,
   ): ApiPromise<T, E> {
-    return new ApiPromise<T, E>(this.#dispatch<T, E>(apiRequest, responseHandler, options?.signal));
+    return new ApiPromise<T, E>(this.#dispatch<T, E>(apiRequest, responseHandler, options));
   }
 
-  async #dispatch<T, E extends AnyResponseError>(
+  async #dispatch<T, E extends AnyApiError>(
     apiRequest: ApiRequest,
     responseHandler: ResponseHandler<T, E>,
-    callerSignal: AbortSignal | undefined,
+    options: RequestOptions | undefined,
   ): Promise<RequestOutcome<T, E>> {
-    const timeoutMs = resolveTimeout(this.#config.timeout);
+    const callerSignal = options?.signal ?? neverAbortedSignal();
+    const uploadController = new AbortController();
 
-    const controller = new AbortController();
-    const onCallerAbort = (): void =>
-      controller.abort(
-        new AbortError({ message: "Request was aborted by the caller.", cause: callerSignal?.reason }),
-      );
-    callerSignal?.addEventListener("abort", onCallerAbort, { once: true });
-    if (callerSignal?.aborted) onCallerAbort();
-    const timer = setTimeout(
-      () => controller.abort(new TimeoutError({ message: `Request timed out after ${timeoutMs}ms.` })),
-      timeoutMs,
+    const url = this.#urlBuilder.build(apiRequest);
+    const { uri } = url;
+
+    const body = buildBody(
+      apiRequest.method,
+      uri,
+      apiRequest.body,
+      AbortSignal.any([callerSignal, uploadController.signal]),
     );
 
-    let response: Response;
-    try {
-      const auth = await apiRequest.auth.resolve(controller.signal);
+    const headers = this.#headersBuilder.build(apiRequest, uri, body);
 
-      const url = buildUrl(
-        apiRequest.url,
-        apiRequest.pathParams,
-        apiRequest.query,
-        this.#config.defaultQuery,
-        this.#config.defaultPathParams,
-        auth.query,
+    const policy = new RetryPolicy(options?.retry, this.#config.retry);
+
+    const response = await policy.execute(apiRequest.method, callerSignal, async (timeout) => {
+      const authenticated = await authenticateRequest(
+        apiRequest.method,
+        apiRequest.auth,
+        url,
+        headers,
+        callerSignal,
       );
-      const body = buildBody(apiRequest.body);
-      const headers = buildHeaders(
-        body.contentType,
-        [this.#config.defaultHeaders, apiRequest.headers, auth.headers],
-        auth.cookies,
-      );
-      const init: RequestInit = { method: apiRequest.method, headers, body: body.body };
 
-      response = await this.#fetch.call(undefined, url, {
-        ...init,
-        signal: controller.signal,
-      });
-    } catch (err) {
-      clearTimeout(timer);
-      callerSignal?.removeEventListener("abort", onCallerAbort);
-      if (err instanceof CoreError) throw err;
-      if (controller.signal.aborted) throw controller.signal.reason;
-      throw new ConnectionError({ message: errorMessage(err, "Connection error."), cause: err });
-    }
-
-    if (response.status === 401) apiRequest.auth.invalidate?.();
-
-    const { status, headers: responseHeaders, statusText } = response;
-    try {
-      if (isSuccess(status)) {
-        const data = await decodeResponse(responseHandler.success, response);
-        return { ok: true, status, headers: responseHeaders, data };
+      const isStreaming = body.streaming === true;
+      const timeoutController = new AbortController();
+      const signal = AbortSignal.any([callerSignal, timeoutController.signal]);
+      if (isStreaming) {
+        timeoutController.signal.addEventListener(
+          "abort",
+          () => uploadController.abort(timeoutController.signal.reason),
+          { once: true },
+        );
       }
 
-      const payload = await decodeErrorPayload(response, responseHandler.errorFactory.errors, status);
+      const timer = startTimeout(timeoutController, timeout, apiRequest.method, uri);
+      let response: Response;
+      try {
+        response = await this.#config.fetch.call(undefined, authenticated.url, {
+          method: apiRequest.method,
+          headers: authenticated.headers,
+          body: body.body,
+          signal,
+          ...(isStreaming ? { duplex: "half", window: null, redirect: "error" } : {}),
+        });
+      } catch (err) {
+        if (err instanceof ConnectionError || err instanceof TimeoutError)
+          return { kind: "fault", error: err, isStreaming };
+        if (err instanceof CoreError) throw err;
+        if (signal.aborted) throw signal.reason;
+        return {
+          kind: "fault",
+          error: new ConnectionError(
+            `${apiRequest.method} ${uri} failed: ${
+              err instanceof Error && err.message !== "" ? err.message : "Connection error."
+            }`,
+            { cause: err, method: apiRequest.method, uri },
+          ),
+          isStreaming,
+        };
+      } finally {
+        clearTimeout(timer);
+      }
+
+      if (response.status === 401) apiRequest.auth.invalidate?.();
+      return {
+        kind: "response",
+        response,
+        isStreaming,
+        discard: (): void => {
+          void Promise.resolve(response.body?.cancel()).catch(() => {});
+        },
+      };
+    });
+
+    try {
+      if (isSuccess(response.status)) {
+        const data = await decodeResponse(responseHandler.success, response, apiRequest.method, uri);
+        return { ok: true, status: response.status, headers: response.headers, data };
+      }
+
+      const payload = await decodeErrorPayload(
+        response,
+        responseHandler.errorFactory.errors,
+        response.status,
+        apiRequest.method,
+        uri,
+      );
       const error = new responseHandler.errorFactory({
-        status,
-        headers: responseHeaders,
-        message: statusMessage(status, statusText),
+        status: response.status,
+        headers: response.headers,
+        method: apiRequest.method,
+        uri,
         payload,
       });
 
-      return { ok: false, status, headers: responseHeaders, error };
+      return { ok: false, status: response.status, headers: response.headers, error };
     } catch (err) {
-      if (err instanceof CoreError) throw err;
-      throw new SdkError({ message: errorMessage(err, "Response handling failed."), cause: err });
-    } finally {
-      clearTimeout(timer);
-      callerSignal?.removeEventListener("abort", onCallerAbort);
+      if (callerSignal.aborted && err instanceof DecodeError && err.cause === callerSignal.reason)
+        throw callerSignal.reason;
+      throw err;
     }
   }
-}
-
-function resolveTimeout(configured: number): number {
-  if (!Number.isFinite(configured) || configured <= 0) return DEFAULT_TIMEOUT_MS;
-  return Math.min(configured, MAX_TIMEOUT_MS);
 }
 
 function isSuccess(status: number): boolean {
   return status >= 200 && status <= 299;
 }
 
-function statusMessage(status: number, statusText: string): string {
-  return `${status} ${statusText || "HTTP error"}`;
+function neverAbortedSignal(): AbortSignal {
+  return new AbortController().signal;
 }
 
-function errorMessage(err: unknown, fallback: string): string {
-  return err instanceof Error && err.message ? err.message : fallback;
+function startTimeout(
+  controller: AbortController,
+  timeoutMs: number,
+  method: HttpMethod,
+  uri: string,
+): ReturnType<typeof setTimeout> {
+  return setTimeout(
+    () =>
+      controller.abort(
+        new TimeoutError(`${method} ${uri} failed: Request timed out after ${timeoutMs}ms.`, {
+          method,
+          uri,
+          timeout: timeoutMs,
+        }),
+      ),
+    timeoutMs,
+  );
 }

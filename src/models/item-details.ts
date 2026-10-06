@@ -4,25 +4,48 @@ import { checkoutOptionSchema, type CheckoutOption } from "./checkout-option.js"
 import { moneySchema, type Money } from "./money.js";
 import { taxAmountSchema, type TaxAmount } from "./tax-amount.js";
 
+/** The item details. */
 export type ItemDetails = {
+  /** An item code that identifies a merchant's goods or service. */
   itemCode?: string;
+  /** The item name. */
   itemName?: string;
+  /** The item description. */
   itemDescription?: string;
+  /** The item options. Describes option choices on the purchase of the item in some detail. */
   itemOptions?: string;
+  /** The number of purchased units of goods or a service. */
   itemQuantity?: string;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   itemUnitPrice?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   itemAmount?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   discountAmount?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   adjustmentAmount?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   giftWrapAmount?: Money;
+  /**
+   * The percentage, as a fixed-point, signed decimal number. For example, define a 19.99% interest
+   * rate as `19.99`.
+   */
   taxPercentage?: string;
+  /** An array of tax amounts levied by a government on the purchase of goods or services. */
   taxAmounts?: TaxAmount[];
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   basicShippingAmount?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   extraShippingAmount?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   handlingAmount?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   insuranceAmount?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   totalItemAmount?: Money;
+  /** The invoice number. An alphanumeric string that identifies a billing for a merchant. */
   invoiceNumber?: string;
+  /** An array of checkout options. Each option has a name and value. */
   checkoutOptions?: CheckoutOption[];
 };
 

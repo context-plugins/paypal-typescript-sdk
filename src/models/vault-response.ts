@@ -4,10 +4,22 @@ import { linkDescriptionSchema, type LinkDescription } from "./link-description.
 import { vaultCustomerSchema, type VaultCustomer } from "./vault-customer.js";
 import { vaultStatusSchema, type VaultStatus } from "./vault-status.js";
 
+/** The details about a saved payment source. */
 export type VaultResponse = {
+  /** The PayPal-generated ID for the saved payment source. */
   id?: string;
+  /**
+   * The vault status.
+   *
+   * @deprecated
+   */
   status?: VaultStatus;
+  /**
+   * This object represents a merchant’s customer, allowing them to store contact details, and track
+   * all payments associated with the same customer.
+   */
   customer?: VaultCustomer;
+  /** An array of request-related HATEOAS links. */
   links?: LinkDescription[];
 };
 

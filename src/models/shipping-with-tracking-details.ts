@@ -11,12 +11,37 @@ import { shippingNameSchema, type ShippingName } from "./shipping-name.js";
 import { shippingOptionSchema, type ShippingOption } from "./shipping-option.js";
 
 export type ShippingWithTrackingDetails = {
+  /** An array of trackers for a transaction. */
   trackers?: OrderTrackerResponse[];
+  /** The name of the party. */
   name?: ShippingName;
+  /**
+   * The internationalized email address. Note: Up to 64 characters are allowed before and 255
+   * characters are allowed after the \@ sign. However, the generally accepted maximum length for an
+   * email address is 254 characters. The pattern verifies that an unquoted \@ sign exists.
+   */
   emailAddress?: string;
+  /**
+   * The phone number in its canonical international [E.164 numbering plan
+   * format](https://www.itu.int/rec/T-REC-E.164/en).
+   */
   phoneNumber?: PhoneNumberWithOptionalCountryCode;
+  /**
+   * A classification for the method of purchase fulfillment (e.g shipping, in-store pickup, etc).
+   * Either `type` or `options` may be present, but not both.
+   */
   type?: FulfillmentType;
+  /**
+   * An array of shipping options that the payee or merchant offers to the payer to ship or pick up
+   * their items.
+   */
   options?: ShippingOption[];
+  /**
+   * The portable international postal address. Maps to
+   * [AddressValidationMetadata](https://github.com/googlei18n/libaddressinput/wiki/AddressValidationMetadata)
+   * and HTML 5.1 [Autofilling form controls: the autocomplete
+   * attribute](https://www.w3.org/TR/html51/sec-forms.html#autofilling-form-controls-the-autocomplete-attribute).
+   */
   address?: Address;
 };
 

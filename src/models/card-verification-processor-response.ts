@@ -3,8 +3,15 @@ import type { Schema } from "../core/validation/schema.js";
 import { avsCodeSchema, type AvsCode } from "./avs-code.js";
 import { cvvCodeSchema, type CvvCode } from "./cvv-code.js";
 
+/**
+ * The processor response information for payment requests, such as direct credit card transactions.
+ */
 export type CardVerificationProcessorResponse = {
+  /**
+   * The address verification code for Visa, Discover, Mastercard, or American Express transactions.
+   */
   avsCode?: AvsCode;
+  /** The card verification value code for for Visa, Discover, Mastercard, or American Express. */
   cvvCode?: CvvCode;
 };
 

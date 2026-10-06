@@ -1,6 +1,7 @@
 import * as s from "../core/validation/index.js";
 import type { EnumSchema } from "../core/validation/schema.js";
 
+/** The Universal Product Code type. */
 export const UpcType = {
   UpcA: "UPC-A",
   UpcB: "UPC-B",

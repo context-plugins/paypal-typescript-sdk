@@ -4,9 +4,12 @@ import { payPalPaymentTokenSchema, type PayPalPaymentToken } from "./pay-pal-pay
 import { setupTokenResponseCardSchema, type SetupTokenResponseCard } from "./setup-token-response-card.js";
 import { venmoPaymentTokenSchema, type VenmoPaymentToken } from "./venmo-payment-token.js";
 
+/** The setup payment method details. */
 export type SetupTokenResponsePaymentSource = {
   card?: SetupTokenResponseCard;
+  /** Full representation of a PayPal Payment Token. */
   paypal?: PayPalPaymentToken;
+  /** Full representation of a Venmo Payment Token. */
   venmo?: VenmoPaymentToken;
 };
 

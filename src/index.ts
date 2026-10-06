@@ -1,5 +1,5 @@
-export { PayPalServerSdkClient } from "./client.js";
-export { DEFAULT_CLIENT_OPTIONS, type ClientOptions } from "./client-options.js";
+export { PaypalClient } from "./client.js";
+export type { ClientOptions } from "./client-options.js";
 
 export type { OAuth2ClientCredentials } from "./core/auth/credentials.js";
 export type {
@@ -7,9 +7,6 @@ export type {
   OAuthToken,
   OAuth2CredentialPlacement,
 } from "./core/auth/oauth2-strategies.js";
-
-export { ServerEnvironment, DEFAULT_SERVER_OPTIONS } from "./servers.js";
-export type { ServerOptions, DefaultServerOptions } from "./servers.js";
 
 export { Orders } from "./resources/orders.js";
 export { Payments } from "./resources/payments.js";
@@ -412,10 +409,6 @@ export {
   type PayPalWalletStoredCredential,
 } from "./models/pay-pal-wallet-stored-credential.js";
 export {
-  payPalWalletVaultBaseSchema,
-  type PayPalWalletVaultBase,
-} from "./models/pay-pal-wallet-vault-base.js";
-export {
   payPalWalletVaultInstructionSchema,
   type PayPalWalletVaultInstruction,
 } from "./models/pay-pal-wallet-vault-instruction.js";
@@ -495,7 +488,6 @@ export { platformFeeSchema, type PlatformFee } from "./models/platform-fee.js";
 export { PricingModel, pricingModelSchema } from "./models/pricing-model.js";
 export { pricingSchemeSchema, type PricingScheme } from "./models/pricing-scheme.js";
 export { pricingTierSchema, type PricingTier } from "./models/pricing-tier.js";
-export { ProcessingInstruction, processingInstructionSchema } from "./models/processing-instruction.js";
 export { processorResponseSchema, type ProcessorResponse } from "./models/processor-response.js";
 export { ProcessorResponseCode, processorResponseCodeSchema } from "./models/processor-response-code.js";
 export { purchaseUnitSchema, type PurchaseUnit } from "./models/purchase-unit.js";
@@ -627,7 +619,6 @@ export {
   subscriptionPatchApplicationContextSchema,
   type SubscriptionPatchApplicationContext,
 } from "./models/subscription-patch-application-context.js";
-export { subscriptionPayerSchema, type SubscriptionPayer } from "./models/subscription-payer.js";
 export { subscriptionPayerNameSchema, type SubscriptionPayerName } from "./models/subscription-payer-name.js";
 export {
   subscriptionPaymentSourceSchema,
@@ -693,7 +684,6 @@ export {
   type UpdatePricingSchemesRequest,
 } from "./models/update-pricing-schemes-request.js";
 export { UsagePattern, usagePatternSchema } from "./models/usage-pattern.js";
-export { UsageType, usageTypeSchema } from "./models/usage-type.js";
 export { vaultApplePayRequestSchema, type VaultApplePayRequest } from "./models/vault-apple-pay-request.js";
 export {
   vaultCardExperienceContextSchema,
@@ -783,17 +773,21 @@ export { iDealPaymentObjectSchema, type IDealPaymentObject } from "./models/idea
 export { iDealPaymentRequestSchema, type IDealPaymentRequest } from "./models/ideal-payment-request.js";
 
 export {
-  CoreError as PayPalServerSdkError,
+  CoreError as PaypalError,
+  ResponseError,
+  DecodeError,
+  EncodeError,
   ConnectionError,
   TimeoutError,
-  AbortError,
-  SdkError,
   AuthError,
+  ConfigurationError,
 } from "./core/errors.js";
-export { ResponseError } from "./core/response-error.js";
+export { ApiError } from "./core/api-error.js";
 export { SchemaError } from "./core/validation/schema-error.js";
 export type { ApiPromise, ApiResult } from "./core/api-promise.js";
-export type { RequestOptions } from "./core/api-request.js";
+export type { HttpMethod, RequestOptions } from "./core/api-request.js";
+export type { RetryOptions, RequestRetryOptions, RetryAttempt, RetryReason } from "./core/retry.js";
+export type { BinaryContent, BinaryData, BinaryErrorContent, FileData, FileInput } from "./core/binary.js";
 export type { ErrorKind } from "./core/errors.js";
-export type { ErrorPayload, Declared } from "./core/response-error.js";
+export type { ErrorPayload, Declared, Undeclared } from "./core/api-error.js";
 export type { Schema, EnumSchema, Encoded } from "./core/validation/schema.js";

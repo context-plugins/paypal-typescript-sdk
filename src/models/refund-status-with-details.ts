@@ -3,8 +3,11 @@ import type { Schema } from "../core/validation/schema.js";
 import { refundStatusDetailsSchema, type RefundStatusDetails } from "./refund-status-details.js";
 import { refundStatusSchema, type RefundStatus } from "./refund-status.js";
 
+/** The refund status with details. */
 export type RefundStatusWithDetails = {
+  /** The status of the refund. */
   status?: RefundStatus;
+  /** The details of the refund status. */
   statusDetails?: RefundStatusDetails;
 };
 

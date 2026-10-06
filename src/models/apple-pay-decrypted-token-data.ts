@@ -8,11 +8,26 @@ import { applePayPaymentDataSchema, type ApplePayPaymentData } from "./apple-pay
 import { applePayTokenizedCardSchema, type ApplePayTokenizedCard } from "./apple-pay-tokenized-card.js";
 import { moneySchema, type Money } from "./money.js";
 
+/** Information about the Payment data obtained by decrypting Apple Pay token. */
 export type ApplePayDecryptedTokenData = {
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   transactionAmount?: Money;
+  /** The payment card to use to fund a payment. Can be a credit or debit card. */
   tokenizedCard: ApplePayTokenizedCard;
+  /**
+   * Apple Pay Hex-encoded device manufacturer identifier. The pattern is defined by an external
+   * party and supports Unicode.
+   */
   deviceManufacturerId?: string;
+  /**
+   * Indicates the type of payment data passed, in case of Non China the payment data is 3DSECURE
+   * and for China it is EMV.
+   */
   paymentDataType?: ApplePayPaymentDataType;
+  /**
+   * Information about the decrypted apple pay payment data for the token like cryptogram, eci
+   * indicator.
+   */
   paymentData?: ApplePayPaymentData;
 };
 

@@ -9,8 +9,10 @@ import {
   type PayPalWalletVaultInstruction,
 } from "./pay-pal-wallet-vault-instruction.js";
 
+/** Additional attributes associated with the use of this PayPal Wallet. */
 export type PayPalWalletAttributes = {
   customer?: PayPalWalletCustomerRequest;
+  /** Resource consolidating common request and response attributes for vaulting PayPal Wallet. */
   vault?: PayPalWalletVaultInstruction;
 };
 

@@ -7,10 +7,19 @@ import {
   type PayPalWalletVaultStatus,
 } from "./pay-pal-wallet-vault-status.js";
 
+/** The details about a saved PayPal Wallet payment source. */
 export type PayPalWalletVaultResponse = {
+  /** The PayPal-generated ID for the saved payment source. */
   id?: string;
+  /**
+   * The vault status.
+   *
+   * @deprecated
+   */
   status?: PayPalWalletVaultStatus;
+  /** An array of request-related HATEOAS links. */
   links?: LinkDescription[];
+  /** The details about a customer in PayPal's system of record. */
   customer?: PayPalWalletCustomer;
 };
 

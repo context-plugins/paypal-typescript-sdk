@@ -5,7 +5,9 @@ import {
   type OrderAuthorizeRequestPaymentSource,
 } from "./order-authorize-request-payment-source.js";
 
+/** The authorization of an order request. */
 export type OrderAuthorizeRequest = {
+  /** The payment source definition. */
   paymentSource?: OrderAuthorizeRequestPaymentSource;
 };
 

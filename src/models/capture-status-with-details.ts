@@ -3,8 +3,11 @@ import type { Schema } from "../core/validation/schema.js";
 import { captureStatusDetailsSchema, type CaptureStatusDetails } from "./capture-status-details.js";
 import { captureStatusSchema, type CaptureStatus } from "./capture-status.js";
 
+/** The status and status details of a captured payment. */
 export type CaptureStatusWithDetails = {
+  /** The status of the captured payment. */
   status?: CaptureStatus;
+  /** The details of the captured payment status. */
   statusDetails?: CaptureStatusDetails;
 };
 

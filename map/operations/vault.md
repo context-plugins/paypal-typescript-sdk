@@ -4,7 +4,7 @@
 
 Accessor: `client.vault` · Source: `src/resources/vault.ts` · 6 operations · Request and error types: namespace `Vault`
 
-**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `pay-pal-server-sdk`; the `Source` path is where to **read** the shape, never what to import. `ResponseError` and the runtime error family are excluded — see sdk-map.md.
+**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `paypal`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
 
 ### createPaymentToken
 
@@ -12,8 +12,9 @@ Accessor: `client.vault` · Source: `src/resources/vault.ts` · 6 operations · 
 - **Wire**: `POST /v3/vault/payment-tokens`
 - **Auth**: `oauth2`
 - **Request body**: `application/json` — the `body` field
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `PaymentTokenResponse`
-- **Error**: `Vault.CreatePaymentTokenError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Vault.CreatePaymentTokenError` — **typed arms**, narrowed on `err.payload.kind`
 - **Error arms**: `"error"` [400] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error4"` [422] `Error` · `"error5"` [500] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
 
 **Fields** — `Vault.CreatePaymentTokenRequest` (2):
@@ -35,8 +36,9 @@ Accessor: `client.vault` · Source: `src/resources/vault.ts` · 6 operations · 
 - **Wire**: `POST /v3/vault/setup-tokens`
 - **Auth**: `oauth2`
 - **Request body**: `application/json` — the `body` field
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `SetupTokenResponse`
-- **Error**: `Vault.CreateSetupTokenError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Vault.CreateSetupTokenError` — **typed arms**, narrowed on `err.payload.kind`
 - **Error arms**: `"error"` [400] `Error` · `"error2"` [403] `Error` · `"error3"` [422] `Error` · `"error4"` [500] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
 
 **Fields** — `Vault.CreateSetupTokenRequest` (2):
@@ -58,8 +60,9 @@ Accessor: `client.vault` · Source: `src/resources/vault.ts` · 6 operations · 
 - **Wire**: `DELETE /v3/vault/payment-tokens/{id}`
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Vault.DeletePaymentTokenError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Vault.DeletePaymentTokenError` — **typed arms**, narrowed on `err.payload.kind`
 - **Error arms**: `"error"` [400] `Error` · `"error2"` [403] `Error` · `"error3"` [500] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
 
 **Fields** — `Vault.DeletePaymentTokenRequest` (1):
@@ -79,7 +82,7 @@ Accessor: `client.vault` · Source: `src/resources/vault.ts` · 6 operations · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `PaymentTokenResponse`
-- **Error**: `Vault.GetPaymentTokenError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Vault.GetPaymentTokenError` — **typed arms**, narrowed on `err.payload.kind`
 - **Error arms**: `"error"` [403] `Error` · `"error2"` [404] `Error` · `"error3"` [422] `Error` · `"error4"` [500] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
 
 **Fields** — `Vault.GetPaymentTokenRequest` (1):
@@ -100,7 +103,7 @@ Accessor: `client.vault` · Source: `src/resources/vault.ts` · 6 operations · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `SetupTokenResponse`
-- **Error**: `Vault.GetSetupTokenError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Vault.GetSetupTokenError` — **typed arms**, narrowed on `err.payload.kind`
 - **Error arms**: `"error"` [403] `Error` · `"error2"` [404] `Error` · `"error3"` [422] `Error` · `"error4"` [500] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
 
 **Fields** — `Vault.GetSetupTokenRequest` (1):
@@ -121,7 +124,7 @@ Accessor: `client.vault` · Source: `src/resources/vault.ts` · 6 operations · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `CustomerVaultPaymentTokensResponse`
-- **Error**: `Vault.ListCustomerPaymentTokensError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Vault.ListCustomerPaymentTokensError` — **typed arms**, narrowed on `err.payload.kind`
 - **Error arms**: `"error"` [400] `Error` · `"error2"` [403] `Error` · `"error3"` [500] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
 
 **Fields** — `Vault.ListCustomerPaymentTokensRequest` (4):

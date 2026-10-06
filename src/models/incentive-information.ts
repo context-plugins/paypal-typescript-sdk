@@ -2,7 +2,9 @@ import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 import { incentiveDetailsSchema, type IncentiveDetails } from "./incentive-details.js";
 
+/** The incentive details. */
 export type IncentiveInformation = {
+  /** An array of incentive details. */
   incentiveDetails?: IncentiveDetails[];
 };
 

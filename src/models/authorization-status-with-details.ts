@@ -6,8 +6,11 @@ import {
 } from "./authorization-status-details.js";
 import { authorizationStatusSchema, type AuthorizationStatus } from "./authorization-status.js";
 
+/** The status fields and status details for an authorized payment. */
 export type AuthorizationStatusWithDetails = {
+  /** The status for the authorized payment. */
   status?: AuthorizationStatus;
+  /** The details of the authorized payment status. */
   statusDetails?: AuthorizationStatusDetails;
 };
 

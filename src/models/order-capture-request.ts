@@ -5,7 +5,9 @@ import {
   type OrderCaptureRequestPaymentSource,
 } from "./order-capture-request-payment-source.js";
 
+/** Completes an capture payment for an order. */
 export type OrderCaptureRequest = {
+  /** The payment source definition. */
   paymentSource?: OrderCaptureRequestPaymentSource;
 };
 

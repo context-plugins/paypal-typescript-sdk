@@ -12,17 +12,14 @@ export function formEncode(value: string): string {
   return percentEncode(value).replace(/%20/g, "+");
 }
 
-export function queryString(
-  layers: ReadonlyArray<readonly StyledParam[] | undefined>,
-  seed: ReadonlyArray<ParamPair> = [],
-): string {
-  return serializePairs([...seed, ...layers.flatMap(flattenParams)], percentEncode);
+export function queryString(layers: ReadonlyArray<readonly StyledParam[]>): string {
+  return serializePairs(layers.flatMap(flattenParams), percentEncode);
 }
 
 export function formString(fields?: ReadonlyArray<StyledParam>): string {
   return serializePairs(flattenParams(fields), formEncode);
 }
 
-function serializePairs(pairs: ReadonlyArray<ParamPair>, encode: (value: string) => string): string {
+export function serializePairs(pairs: ReadonlyArray<ParamPair>, encode: (value: string) => string): string {
   return pairs.map(([key, value]) => `${encode(key)}=${encode(value)}`).join("&");
 }

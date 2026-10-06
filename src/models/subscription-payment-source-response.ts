@@ -5,7 +5,9 @@ import {
   type CardResponseWithBillingAddress,
 } from "./card-response-with-billing-address.js";
 
+/** The payment source used to fund the payment. */
 export type SubscriptionPaymentSourceResponse = {
+  /** The payment card used to fund the payment. Card can be a credit or debit card. */
   card?: CardResponseWithBillingAddress;
 };
 

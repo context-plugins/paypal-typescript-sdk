@@ -5,7 +5,9 @@ import {
   type AuthorizationIncompleteReason,
 } from "./authorization-incomplete-reason.js";
 
+/** The details of the authorized payment status. */
 export type AuthorizationStatusDetails = {
+  /** The reason why the authorized status is `PENDING`. */
   reason?: AuthorizationIncompleteReason;
 };
 

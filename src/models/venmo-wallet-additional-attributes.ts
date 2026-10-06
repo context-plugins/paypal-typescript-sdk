@@ -9,8 +9,11 @@ import {
   type VenmoWalletVaultAttributes,
 } from "./venmo-wallet-vault-attributes.js";
 
+/** Additional attributes associated with the use of this Venmo Wallet. */
 export type VenmoWalletAdditionalAttributes = {
+  /** The details about a customer in PayPal's system of record. */
   customer?: VenmoWalletCustomerInformation;
+  /** Resource consolidating common request and response attirbutes for vaulting Venmo Wallet. */
   vault?: VenmoWalletVaultAttributes;
 };
 

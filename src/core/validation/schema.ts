@@ -2,6 +2,15 @@ import * as zod from "zod/v4-mini";
 import type { ZodMiniType } from "zod/v4-mini";
 import { decodeWith, encodeWith } from "./schema-error.js";
 
+/**
+ * What a value looks like on the wire.
+ *
+ * @remarks
+ * Only `Date` and `Uint8Array` change shape — a `Date` becomes its serialized form and a
+ * `Uint8Array` a string in the RFC 4648 alphabet its field declares — recursing through arrays and
+ * objects. Everything else is unchanged, because the schema layer stops at *values*: how a number
+ * is written into a query string versus a JSON body is the engine's decision, not the schema's.
+ */
 export type Encoded<T> = T extends Date
   ? string | number
   : T extends Uint8Array
@@ -20,11 +29,33 @@ export type Entry<V, W = unknown> = ZodMiniType<V, W> | Schema<V, W>;
 
 export type Shape<T> = { [K in keyof T]-?: Entry<T[K]> } & { readonly _keysMap?: KeysMap<T> };
 
+/**
+ * The codec exported beside every model: `decode` from the wire, `encode` back to it.
+ *
+ * @remarks
+ * Both directions are complete on their own — one call each, never a pair. `decode` accepts the
+ * wire form only and `encode` the SDK form only, so passing one direction's value to the other is
+ * rejected rather than waved through. A failure throws `SchemaError`; through an operation the
+ * same failure reaches you one level down, on the `cause` of a `DecodeError` or an
+ * `EncodeError`, which name the call.
+ *
+ * Validation is **structural**: types, shape, and required keys. Value constraints such as
+ * `minLength`, `pattern` or enum membership are the service's to enforce, and the SDK does not
+ * duplicate them.
+ */
 export type Schema<T, W = Encoded<T>> = {
   readonly decode: (value: unknown) => T;
   readonly encode: (value: unknown) => W;
 };
 
+/**
+ * The codec of an open enum, which also exposes the known members at run time.
+ *
+ * @remarks
+ * `values` is the set the spec declared. It is **not** enforced — an open enum validates the base
+ * type only, so an unrecognized server value round-trips instead of throwing. Test membership
+ * yourself against `values` when you need to.
+ */
 export type EnumSchema<T> = Schema<T, T> & {
   readonly values: readonly T[];
 };

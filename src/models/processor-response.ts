@@ -5,10 +5,22 @@ import { cvvCodeSchema, type CvvCode } from "./cvv-code.js";
 import { paymentAdviceCodeSchema, type PaymentAdviceCode } from "./payment-advice-code.js";
 import { processorResponseCodeSchema, type ProcessorResponseCode } from "./processor-response-code.js";
 
+/**
+ * The processor response information for payment requests, such as direct credit card transactions.
+ */
 export type ProcessorResponse = {
+  /**
+   * The address verification code for Visa, Discover, Mastercard, or American Express transactions.
+   */
   avsCode?: AvsCode;
+  /** The card verification value code for for Visa, Discover, Mastercard, or American Express. */
   cvvCode?: CvvCode;
+  /** Processor response code for the non-PayPal payment processor errors. */
   responseCode?: ProcessorResponseCode;
+  /**
+   * The declined payment transactions might have payment advice codes. The card networks, like Visa
+   * and Mastercard, return payment advice codes.
+   */
   paymentAdviceCode?: PaymentAdviceCode;
 };
 

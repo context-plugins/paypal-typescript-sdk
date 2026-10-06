@@ -1,4 +1,3 @@
-import { SdkError } from "./errors.js";
 import type { Entry } from "./validation/schema.js";
 import { encodeEntry } from "./validation/schema-error.js";
 
@@ -14,15 +13,15 @@ export type ParamValue =
   | readonly ParamValue[]
   | { readonly [key: string]: ParamValue };
 
-export type Param = {
-  readonly name: string;
+export type Param<Name extends string = string> = {
+  readonly name: Name;
   readonly value: unknown;
   readonly schema: Entry<unknown>;
 };
 
 export type StyledParam = Param & { readonly style?: ParamStyle | undefined };
 
-export type ParamPair = readonly [string, string];
+export type ParamPair = readonly [name: string, value: string];
 
 const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER);
 
@@ -82,7 +81,7 @@ function joined(key: string, values: readonly ParamValue[], separator: string): 
 }
 
 function unknownStyle(style: never): never {
-  throw new SdkError({ message: `Unknown parameter style: ${String(style)}.` });
+  throw new TypeError(`Unknown parameter style: ${String(style)}.`);
 }
 
 export function isScalar(value: ParamValue): value is string | number | boolean | bigint {

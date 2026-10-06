@@ -4,7 +4,7 @@
 
 Accessor: `client.transactionSearch` · Source: `src/resources/transaction-search.ts` · 2 operations · Request and error types: namespace `TransactionSearch`
 
-**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `pay-pal-server-sdk`; the `Source` path is where to **read** the shape, never what to import. `ResponseError` and the runtime error family are excluded — see sdk-map.md.
+**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `paypal`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
 
 ### searchBalances
 
@@ -13,8 +13,8 @@ Accessor: `client.transactionSearch` · Source: `src/resources/transaction-searc
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `BalancesResponse`
-- **Error**: `TransactionSearch.SearchBalancesError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"defaultError"` [400] `DefaultError` · `"defaultError2"` [403] `DefaultError` · `"defaultError3"` [500] `DefaultError` · `"defaultError4"` [400–599] `DefaultError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `TransactionSearch.SearchBalancesError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"defaultError"` [400] `DefaultError` · `"defaultError2"` [403] `DefaultError` · `"defaultError3"` [500] `DefaultError` · `"defaultError4"` [default — any status no arm above covers] `DefaultError` · `"undeclared"` [a `default`-matched body that did not fit `DefaultError`] `rawBody: ArrayBuffer`
 
 **Fields** — `TransactionSearch.SearchBalancesRequest` (2):
 
@@ -35,8 +35,8 @@ Accessor: `client.transactionSearch` · Source: `src/resources/transaction-searc
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `SearchResponse`
-- **Error**: `TransactionSearch.SearchTransactionsError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"searchError"` [400–599] `SearchError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `TransactionSearch.SearchTransactionsError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"searchError"` [default — any status no arm above covers] `SearchError` · `"undeclared"` [a `default`-matched body that did not fit `SearchError`] `rawBody: ArrayBuffer`
 
 **Fields** — `TransactionSearch.SearchTransactionsRequest` (14):
 

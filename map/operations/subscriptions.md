@@ -4,7 +4,7 @@
 
 Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 17 operations · Request and error types: namespace `Subscriptions`
 
-**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `pay-pal-server-sdk`; the `Source` path is where to **read** the shape, never what to import. `ResponseError` and the runtime error family are excluded — see sdk-map.md.
+**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `paypal`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
 
 ### activateBillingPlan
 
@@ -12,9 +12,10 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Wire**: `POST /v1/billing/plans/{id}/activate`
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.ActivateBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.ActivateBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.ActivateBillingPlanRequest` (1):
 
@@ -31,10 +32,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `activateSubscription(request: Subscriptions.ActivateSubscriptionRequestParams, options?: RequestOptions): ApiPromise<undefined, Subscriptions.ActivateSubscriptionError>`
 - **Wire**: `POST /v1/billing/subscriptions/{id}/activate`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.ActivateSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.ActivateSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.ActivateSubscriptionRequestParams` (2):
 
@@ -53,10 +55,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `cancelSubscription(request: Subscriptions.CancelSubscriptionRequestParams, options?: RequestOptions): ApiPromise<undefined, Subscriptions.CancelSubscriptionError>`
 - **Wire**: `POST /v1/billing/subscriptions/{id}/cancel`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.CancelSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.CancelSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.CancelSubscriptionRequestParams` (2):
 
@@ -75,10 +78,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `captureSubscription(request: Subscriptions.CaptureSubscriptionRequestParams, options?: RequestOptions): ApiPromise<SubscriptionTransactionDetails, Subscriptions.CaptureSubscriptionError>`
 - **Wire**: `POST /v1/billing/subscriptions/{id}/capture`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `SubscriptionTransactionDetails`
-- **Error**: `Subscriptions.CaptureSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.CaptureSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.CaptureSubscriptionRequestParams` (3):
 
@@ -99,10 +103,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `createBillingPlan(request: Subscriptions.CreateBillingPlanRequest, options?: RequestOptions): ApiPromise<BillingPlan, Subscriptions.CreateBillingPlanError>`
 - **Wire**: `POST /v1/billing/plans`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `BillingPlan`
-- **Error**: `Subscriptions.CreateBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.CreateBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.CreateBillingPlanRequest` (3):
 
@@ -123,10 +128,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `createSubscription(request: Subscriptions.CreateSubscriptionRequestParams, options?: RequestOptions): ApiPromise<Subscription, Subscriptions.CreateSubscriptionError>`
 - **Wire**: `POST /v1/billing/subscriptions`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `Subscription`
-- **Error**: `Subscriptions.CreateSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.CreateSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.CreateSubscriptionRequestParams` (4):
 
@@ -149,9 +155,10 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Wire**: `POST /v1/billing/plans/{id}/deactivate`
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.DeactivateBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.DeactivateBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [422] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.DeactivateBillingPlanRequest` (1):
 
@@ -170,8 +177,8 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `BillingPlan`
-- **Error**: `Subscriptions.GetBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [500] `SubscriptionError` · `"subscriptionError5"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.GetBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [500] `SubscriptionError` · `"subscriptionError5"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.GetBillingPlanRequest` (1):
 
@@ -191,8 +198,8 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `Subscription`
-- **Error**: `Subscriptions.GetSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [500] `SubscriptionError` · `"subscriptionError5"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.GetSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [401] `SubscriptionError` · `"subscriptionError2"` [403] `SubscriptionError` · `"subscriptionError3"` [404] `SubscriptionError` · `"subscriptionError4"` [500] `SubscriptionError` · `"subscriptionError5"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.GetSubscriptionRequest` (2):
 
@@ -213,8 +220,8 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `PlanCollection`
-- **Error**: `Subscriptions.ListBillingPlansError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.ListBillingPlansError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.ListBillingPlansRequest` (5):
 
@@ -238,8 +245,8 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `TransactionsList`
-- **Error**: `Subscriptions.ListSubscriptionTransactionsError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.ListSubscriptionTransactionsError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [500] `SubscriptionError` · `"subscriptionError6"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.ListSubscriptionTransactionsRequest` (3):
 
@@ -261,8 +268,8 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `SubscriptionCollection`
-- **Error**: `Subscriptions.ListSubscriptionsError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [500] `SubscriptionError` · `"subscriptionError5"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.ListSubscriptionsError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [500] `SubscriptionError` · `"subscriptionError5"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.ListSubscriptionsRequest` (10):
 
@@ -289,10 +296,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `patchBillingPlan(request: Subscriptions.PatchBillingPlanRequest, options?: RequestOptions): ApiPromise<undefined, Subscriptions.PatchBillingPlanError>`
 - **Wire**: `PATCH /v1/billing/plans/{id}`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field, a bare top-level JSON array
+- **Request body**: `application/json` — the `body` field, a bare top-level JSON array. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.PatchBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.PatchBillingPlanError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.PatchBillingPlanRequest` (2):
 
@@ -311,10 +319,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `patchSubscription(request: Subscriptions.PatchSubscriptionRequest, options?: RequestOptions): ApiPromise<undefined, Subscriptions.PatchSubscriptionError>`
 - **Wire**: `PATCH /v1/billing/subscriptions/{id}`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field, a bare top-level JSON array
+- **Request body**: `application/json` — the `body` field, a bare top-level JSON array. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.PatchSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.PatchSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.PatchSubscriptionRequest` (2):
 
@@ -333,10 +342,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `reviseSubscription(request: Subscriptions.ReviseSubscriptionRequest, options?: RequestOptions): ApiPromise<ModifySubscriptionResponse, Subscriptions.ReviseSubscriptionError>`
 - **Wire**: `POST /v1/billing/subscriptions/{id}/revise`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `ModifySubscriptionResponse`
-- **Error**: `Subscriptions.ReviseSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.ReviseSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.ReviseSubscriptionRequest` (2):
 
@@ -356,10 +366,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `suspendSubscription(request: Subscriptions.SuspendSubscriptionRequest, options?: RequestOptions): ApiPromise<undefined, Subscriptions.SuspendSubscriptionError>`
 - **Wire**: `POST /v1/billing/subscriptions/{id}/suspend`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.SuspendSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.SuspendSubscriptionError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.SuspendSubscriptionRequest` (2):
 
@@ -378,10 +389,11 @@ Accessor: `client.subscriptions` · Source: `src/resources/subscriptions.ts` · 
 - **Signature**: `updateBillingPlanPricingSchemes(request: Subscriptions.UpdateBillingPlanPricingSchemesRequest, options?: RequestOptions): ApiPromise<undefined, Subscriptions.UpdateBillingPlanPricingSchemesError>`
 - **Wire**: `POST /v1/billing/plans/{id}/update-pricing-schemes`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `undefined` — the operation resolves to nothing
-- **Error**: `Subscriptions.UpdateBillingPlanPricingSchemesError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [400–599] `SubscriptionError` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Subscriptions.UpdateBillingPlanPricingSchemesError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"subscriptionError"` [400] `SubscriptionError` · `"subscriptionError2"` [401] `SubscriptionError` · `"subscriptionError3"` [403] `SubscriptionError` · `"subscriptionError4"` [404] `SubscriptionError` · `"subscriptionError5"` [422] `SubscriptionError` · `"subscriptionError6"` [500] `SubscriptionError` · `"subscriptionError7"` [default — any status no arm above covers] `SubscriptionError` · `"undeclared"` [a `default`-matched body that did not fit `SubscriptionError`] `rawBody: ArrayBuffer`
 
 **Fields** — `Subscriptions.UpdateBillingPlanPricingSchemesRequest` (2):
 

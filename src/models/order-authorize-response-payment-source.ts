@@ -6,11 +6,17 @@ import { googlePayWalletResponseSchema, type GooglePayWalletResponse } from "./g
 import { payPalWalletResponseSchema, type PayPalWalletResponse } from "./pay-pal-wallet-response.js";
 import { venmoWalletResponseSchema, type VenmoWalletResponse } from "./venmo-wallet-response.js";
 
+/** The payment source used to fund the payment. */
 export type OrderAuthorizeResponsePaymentSource = {
+  /** The payment card to use to fund a payment. Card can be a credit or debit card. */
   card?: CardResponse;
+  /** The PayPal Wallet response. */
   paypal?: PayPalWalletResponse;
+  /** Information needed to pay using ApplePay. */
   applePay?: ApplePayPaymentObject;
+  /** Google Pay Wallet payment data. */
   googlePay?: GooglePayWalletResponse;
+  /** Venmo wallet response. */
   venmo?: VenmoWalletResponse;
 };
 

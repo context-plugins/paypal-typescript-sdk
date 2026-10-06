@@ -4,17 +4,18 @@
 
 Accessor: `client.payments` · Source: `src/resources/payments.ts` · 7 operations · Request and error types: namespace `Payments`
 
-**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `pay-pal-server-sdk`; the `Source` path is where to **read** the shape, never what to import. `ResponseError` and the runtime error family are excluded — see sdk-map.md.
+**Type sources**: every type an operation names, with the file that declares it and the schema value exported beside it. Import every name from `paypal`; the `Source` path is where to **read** the shape, never what to import. `ApiError`, the runtime error family and the file vocabulary are excluded — see sdk-map.md.
 
 ### captureAuthorizedPayment
 
 - **Signature**: `captureAuthorizedPayment(request: Payments.CaptureAuthorizedPaymentRequest, options?: RequestOptions): ApiPromise<CapturedPayment, Payments.CaptureAuthorizedPaymentError>`
 - **Wire**: `POST /v2/payments/authorizations/{authorization_id}/capture`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `CapturedPayment`
-- **Error**: `Payments.CaptureAuthorizedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error"` [400] `Error` · `"error2"` [401] `Error` · `"error3"` [403] `Error` · `"error4"` [404] `Error` · `"error5"` [409] `Error` · `"error6"` [422] `Error` · `"error500"` [500] no body · `"error7"` [400–599] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Payments.CaptureAuthorizedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error"` [400] `Error` · `"error2"` [401] `Error` · `"error3"` [403] `Error` · `"error4"` [404] `Error` · `"error5"` [409] `Error` · `"error6"` [422] `Error` · `"error500"` [500] no body · `"error7"` [default — any status no arm above covers] `Error` · `"undeclared"` [a `default`-matched body that did not fit `Error`] `rawBody: ArrayBuffer`
 
 **Fields** — `Payments.CaptureAuthorizedPaymentRequest` (6):
 
@@ -40,8 +41,8 @@ Accessor: `client.payments` · Source: `src/resources/payments.ts` · 7 operatio
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `PaymentAuthorization`
-- **Error**: `Payments.GetAuthorizedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error500"` [500] no body · `"error4"` [400–599] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Payments.GetAuthorizedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error500"` [500] no body · `"error4"` [default — any status no arm above covers] `Error` · `"undeclared"` [a `default`-matched body that did not fit `Error`] `rawBody: ArrayBuffer`
 
 **Fields** — `Payments.GetAuthorizedPaymentRequest` (3):
 
@@ -63,8 +64,8 @@ Accessor: `client.payments` · Source: `src/resources/payments.ts` · 7 operatio
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `CapturedPayment`
-- **Error**: `Payments.GetCapturedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error500"` [500] no body · `"error4"` [400–599] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Payments.GetCapturedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error500"` [500] no body · `"error4"` [default — any status no arm above covers] `Error` · `"undeclared"` [a `default`-matched body that did not fit `Error`] `rawBody: ArrayBuffer`
 
 **Fields** — `Payments.GetCapturedPaymentRequest` (2):
 
@@ -85,8 +86,8 @@ Accessor: `client.payments` · Source: `src/resources/payments.ts` · 7 operatio
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
 - **Returns**: `Refund`
-- **Error**: `Payments.GetRefundError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error500"` [500] no body · `"error4"` [400–599] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Payments.GetRefundError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error500"` [500] no body · `"error4"` [default — any status no arm above covers] `Error` · `"undeclared"` [a `default`-matched body that did not fit `Error`] `rawBody: ArrayBuffer`
 
 **Fields** — `Payments.GetRefundRequest` (3):
 
@@ -106,10 +107,11 @@ Accessor: `client.payments` · Source: `src/resources/payments.ts` · 7 operatio
 - **Signature**: `reauthorizePayment(request: Payments.ReauthorizePaymentRequest, options?: RequestOptions): ApiPromise<PaymentAuthorization, Payments.ReauthorizePaymentError>`
 - **Wire**: `POST /v2/payments/authorizations/{authorization_id}/reauthorize`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `PaymentAuthorization`
-- **Error**: `Payments.ReauthorizePaymentError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error"` [400] `Error` · `"error2"` [401] `Error` · `"error3"` [403] `Error` · `"error4"` [404] `Error` · `"error5"` [422] `Error` · `"error500"` [500] no body · `"error6"` [400–599] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Payments.ReauthorizePaymentError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error"` [400] `Error` · `"error2"` [401] `Error` · `"error3"` [403] `Error` · `"error4"` [404] `Error` · `"error5"` [422] `Error` · `"error500"` [500] no body · `"error6"` [default — any status no arm above covers] `Error` · `"undeclared"` [a `default`-matched body that did not fit `Error`] `rawBody: ArrayBuffer`
 
 **Fields** — `Payments.ReauthorizePaymentRequest` (5):
 
@@ -132,10 +134,11 @@ Accessor: `client.payments` · Source: `src/resources/payments.ts` · 7 operatio
 - **Signature**: `refundCapturedPayment(request: Payments.RefundCapturedPaymentRequest, options?: RequestOptions): ApiPromise<Refund, Payments.RefundCapturedPaymentError>`
 - **Wire**: `POST /v2/payments/captures/{capture_id}/refund`
 - **Auth**: `oauth2`
-- **Request body**: `application/json` — the `body` field
+- **Request body**: `application/json` — the `body` field. **Optional**: omit it and the request carries no body and no `Content-Type` header at all
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `Refund`
-- **Error**: `Payments.RefundCapturedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error"` [400] `Error` · `"error2"` [401] `Error` · `"error3"` [403] `Error` · `"error4"` [404] `Error` · `"error5"` [409] `Error` · `"error6"` [422] `Error` · `"error500"` [500] no body · `"error7"` [400–599] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Payments.RefundCapturedPaymentError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error"` [400] `Error` · `"error2"` [401] `Error` · `"error3"` [403] `Error` · `"error4"` [404] `Error` · `"error5"` [409] `Error` · `"error6"` [422] `Error` · `"error500"` [500] no body · `"error7"` [default — any status no arm above covers] `Error` · `"undeclared"` [a `default`-matched body that did not fit `Error`] `rawBody: ArrayBuffer`
 
 **Fields** — `Payments.RefundCapturedPaymentRequest` (6):
 
@@ -160,9 +163,10 @@ Accessor: `client.payments` · Source: `src/resources/payments.ts` · 7 operatio
 - **Wire**: `POST /v2/payments/authorizations/{authorization_id}/void`
 - **Auth**: `oauth2`
 - **Request body**: none — no `Content-Type` header is sent
+- **SDK-sent**: `header Idempotency-Key` (minted per call)
 - **Returns**: `PaymentAuthorization`
-- **Error**: `Payments.VoidPaymentError` — **typed arms**, narrowed on `err.payload.kind`
-- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error4"` [409] `Error` · `"error5"` [422] `Error` · `"error500"` [500] no body · `"error6"` [400–599] `Error` · `"undeclared"` [any other] `rawBody: ArrayBuffer`
+- **Error**: `PaypalError` with `kind: "api"`, an instance of `Payments.VoidPaymentError` — **typed arms**, narrowed on `err.payload.kind`
+- **Error arms**: `"error"` [401] `Error` · `"error2"` [403] `Error` · `"error3"` [404] `Error` · `"error4"` [409] `Error` · `"error5"` [422] `Error` · `"error500"` [500] no body · `"error6"` [default — any status no arm above covers] `Error` · `"undeclared"` [a `default`-matched body that did not fit `Error`] `rawBody: ArrayBuffer`
 
 **Fields** — `Payments.VoidPaymentRequest` (5):
 

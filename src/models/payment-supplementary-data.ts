@@ -2,7 +2,9 @@ import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 import { relatedIdentifiersSchema, type RelatedIdentifiers } from "./related-identifiers.js";
 
+/** The supplementary data. */
 export type PaymentSupplementaryData = {
+  /** Identifiers related to a specific resource. */
   relatedIds?: RelatedIdentifiers;
 };
 

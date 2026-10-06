@@ -8,13 +8,21 @@ import { shippingInformationSchema, type ShippingInformation } from "./shipping-
 import { storeInformationSchema, type StoreInformation } from "./store-information.js";
 import { transactionInformationSchema, type TransactionInformation } from "./transaction-information.js";
 
+/** The transaction details. */
 export type TransactionDetails = {
+  /** The transaction information. */
   transactionInfo?: TransactionInformation;
+  /** The payer information. */
   payerInfo?: PayerInformation;
+  /** The shipping information. */
   shippingInfo?: ShippingInformation;
+  /** The cart information. */
   cartInfo?: CartInformation;
+  /** The store information. */
   storeInfo?: StoreInformation;
+  /** The auction information. */
   auctionInfo?: AuctionInformation;
+  /** The incentive details. */
   incentiveInfo?: IncentiveInformation;
 };
 

@@ -3,8 +3,13 @@ import type { Schema } from "../core/validation/schema.js";
 import { linkDescriptionSchema, type LinkDescription } from "./link-description.js";
 import { subscriptionSchema, type Subscription } from "./subscription.js";
 
+/** The list of subscriptions. */
 export type SubscriptionCollection = {
+  /** An array of subscriptions. */
   subscriptions?: Subscription[];
+  /**
+   * An array of request-related [HATEOAS links](/docs/api/reference/api-responses/#hateoas-links).
+   */
   links?: LinkDescription[];
 };
 

@@ -1,8 +1,9 @@
 import type { AuthSchemes } from "../auth-schemes.js";
+import { ApiError, type Declared, type ErrorDecoders, type ErrorPayload } from "../core/api-error.js";
 import type { ApiPromise } from "../core/api-promise.js";
 import type { RequestOptions } from "../core/api-request.js";
 import type { RawClient } from "../core/raw-client.js";
-import { ResponseError, type Declared, type ErrorDecoders } from "../core/response-error.js";
+import { uuid } from "../core/uuid.js";
 import * as s from "../core/validation/index.js";
 import {
   customerVaultPaymentTokensResponseSchema,
@@ -15,6 +16,9 @@ import { setupTokenRequestSchema, type SetupTokenRequest } from "../models/setup
 import { setupTokenResponseSchema, type SetupTokenResponse } from "../models/setup-token-response.js";
 import type { Servers } from "../servers.js";
 
+/**
+ * Use the `/vault` resource to create, retrieve, and delete payment and setup tokens.
+ */
 export class Vault {
   readonly #rawClient: RawClient;
   readonly #servers: Servers;
@@ -26,6 +30,22 @@ export class Vault {
     this.#auth = auth;
   }
 
+  /**
+   * Create payment token for a given payment source
+   *
+   * @remarks
+   * Creates a Payment Token from the given payment source and adds it to the Vault of the
+   * associated customer.
+   *
+   * @returns Idempotent response for a successful creation of payment token.
+   *
+   * @throws {@link Vault.CreatePaymentTokenError} when the API answers with an error status —
+   * narrow on `err.payload.kind`
+   *
+   * @throws {@link PaypalError} when no usable response was produced: a connection failure, a
+   * timeout, a body that would not decode, a value that would not encode, or a credential that
+   * could not be obtained
+   */
   createPaymentToken(
     request: Vault.CreatePaymentTokenRequest,
     options?: RequestOptions,
@@ -33,10 +53,13 @@ export class Vault {
     return this.#rawClient.execute(
       {
         method: "POST",
-        url: this.#servers.default("/v3/vault/payment-tokens"),
+        urlTemplate: this.#servers.default("/v3/vault/payment-tokens"),
         auth: this.#auth.oauth2,
+        pathParams: [],
+        query: [],
         headers: [
           { name: "PayPal-Request-Id", value: request.payPalRequestId, schema: s.optional(s.string()) },
+          { name: "Idempotency-Key", value: uuid(), schema: s.string() },
         ],
         body: { kind: "json", value: request.body, schema: paymentTokenRequestSchema },
       },
@@ -48,6 +71,22 @@ export class Vault {
     );
   }
 
+  /**
+   * Create a setup token
+   *
+   * @remarks
+   * Creates a Setup Token from the given payment source and adds it to the Vault of the associated
+   * customer.
+   *
+   * @returns Idempotent response for a successful creation of setup token.
+   *
+   * @throws {@link Vault.CreateSetupTokenError} when the API answers with an error status — narrow
+   * on `err.payload.kind`
+   *
+   * @throws {@link PaypalError} when no usable response was produced: a connection failure, a
+   * timeout, a body that would not decode, a value that would not encode, or a credential that
+   * could not be obtained
+   */
   createSetupToken(
     request: Vault.CreateSetupTokenRequest,
     options?: RequestOptions,
@@ -55,10 +94,13 @@ export class Vault {
     return this.#rawClient.execute(
       {
         method: "POST",
-        url: this.#servers.default("/v3/vault/setup-tokens"),
+        urlTemplate: this.#servers.default("/v3/vault/setup-tokens"),
         auth: this.#auth.oauth2,
+        pathParams: [],
+        query: [],
         headers: [
           { name: "PayPal-Request-Id", value: request.payPalRequestId, schema: s.optional(s.string()) },
+          { name: "Idempotency-Key", value: uuid(), schema: s.string() },
         ],
         body: { kind: "json", value: request.body, schema: setupTokenRequestSchema },
       },
@@ -70,6 +112,22 @@ export class Vault {
     );
   }
 
+  /**
+   * Delete payment token
+   *
+   * @remarks
+   * Delete the payment token associated with the payment token id.
+   *
+   * @returns The server has successfully executed the method, but there is no entity body to
+   * return.
+   *
+   * @throws {@link Vault.DeletePaymentTokenError} when the API answers with an error status —
+   * narrow on `err.payload.kind`
+   *
+   * @throws {@link PaypalError} when no usable response was produced: a connection failure, a
+   * timeout, a body that would not decode, a value that would not encode, or a credential that
+   * could not be obtained
+   */
   deletePaymentToken(
     request: Vault.DeletePaymentTokenRequest,
     options?: RequestOptions,
@@ -77,9 +135,11 @@ export class Vault {
     return this.#rawClient.execute(
       {
         method: "DELETE",
-        url: this.#servers.default("/v3/vault/payment-tokens/{id}"),
+        urlTemplate: this.#servers.default("/v3/vault/payment-tokens/{id}"),
         auth: this.#auth.oauth2,
         pathParams: [{ name: "id", value: request.id, schema: s.string() }],
+        query: [],
+        headers: [{ name: "Idempotency-Key", value: uuid(), schema: s.string() }],
         body: { kind: "empty" },
       },
       {
@@ -90,6 +150,22 @@ export class Vault {
     );
   }
 
+  /**
+   * Retrieve a payment token
+   *
+   * @remarks
+   * Returns a readable representation of vaulted payment source associated with the payment token
+   * id.
+   *
+   * @returns Successful execution.
+   *
+   * @throws {@link Vault.GetPaymentTokenError} when the API answers with an error status — narrow
+   * on `err.payload.kind`
+   *
+   * @throws {@link PaypalError} when no usable response was produced: a connection failure, a
+   * timeout, a body that would not decode, a value that would not encode, or a credential that
+   * could not be obtained
+   */
   getPaymentToken(
     request: Vault.GetPaymentTokenRequest,
     options?: RequestOptions,
@@ -97,9 +173,11 @@ export class Vault {
     return this.#rawClient.execute(
       {
         method: "GET",
-        url: this.#servers.default("/v3/vault/payment-tokens/{id}"),
+        urlTemplate: this.#servers.default("/v3/vault/payment-tokens/{id}"),
         auth: this.#auth.oauth2,
         pathParams: [{ name: "id", value: request.id, schema: s.string() }],
+        query: [],
+        headers: [],
         body: { kind: "empty" },
       },
       {
@@ -110,6 +188,22 @@ export class Vault {
     );
   }
 
+  /**
+   * Retrieve a setup token
+   *
+   * @remarks
+   * Returns a readable representation of temporarily vaulted payment source associated with the
+   * setup token id.
+   *
+   * @returns Found requested setup-token, returned a payment method associated with the token.
+   *
+   * @throws {@link Vault.GetSetupTokenError} when the API answers with an error status — narrow on
+   * `err.payload.kind`
+   *
+   * @throws {@link PaypalError} when no usable response was produced: a connection failure, a
+   * timeout, a body that would not decode, a value that would not encode, or a credential that
+   * could not be obtained
+   */
   getSetupToken(
     request: Vault.GetSetupTokenRequest,
     options?: RequestOptions,
@@ -117,9 +211,11 @@ export class Vault {
     return this.#rawClient.execute(
       {
         method: "GET",
-        url: this.#servers.default("/v3/vault/setup-tokens/{id}"),
+        urlTemplate: this.#servers.default("/v3/vault/setup-tokens/{id}"),
         auth: this.#auth.oauth2,
         pathParams: [{ name: "id", value: request.id, schema: s.string() }],
+        query: [],
+        headers: [],
         body: { kind: "empty" },
       },
       {
@@ -130,6 +226,21 @@ export class Vault {
     );
   }
 
+  /**
+   * List all payment tokens
+   *
+   * @remarks
+   * Returns all payment tokens for a customer.
+   *
+   * @returns Successful execution.
+   *
+   * @throws {@link Vault.ListCustomerPaymentTokensError} when the API answers with an error status
+   * — narrow on `err.payload.kind`
+   *
+   * @throws {@link PaypalError} when no usable response was produced: a connection failure, a
+   * timeout, a body that would not decode, a value that would not encode, or a credential that
+   * could not be obtained
+   */
   listCustomerPaymentTokens(
     request: Vault.ListCustomerPaymentTokensRequest,
     options?: RequestOptions,
@@ -137,14 +248,16 @@ export class Vault {
     return this.#rawClient.execute(
       {
         method: "GET",
-        url: this.#servers.default("/v3/vault/payment-tokens"),
+        urlTemplate: this.#servers.default("/v3/vault/payment-tokens"),
         auth: this.#auth.oauth2,
+        pathParams: [],
         query: [
           { name: "customer_id", value: request.customerId, schema: s.string() },
-          { name: "page_size", value: request.pageSize, schema: s.defaulted(s.number(), 5) },
-          { name: "page", value: request.page, schema: s.defaulted(s.number(), 1) },
+          { name: "page_size", value: request.pageSize, schema: s.defaulted(s.int(), 5) },
+          { name: "page", value: request.page, schema: s.defaulted(s.int(), 1) },
           { name: "total_required", value: request.totalRequired, schema: s.defaulted(s.boolean(), false) },
         ],
+        headers: [],
         body: { kind: "empty" },
       },
       {
@@ -158,17 +271,21 @@ export class Vault {
 
 export namespace Vault {
   export type CreatePaymentTokenRequest = {
+    /** The server stores keys for 3 hours. */
     payPalRequestId?: string;
+    /** Payment Token creation with a financial instrument and an optional customer_id. */
     body: PaymentTokenRequest;
   };
 
-  export class CreatePaymentTokenError extends ResponseError<
-    | Declared<"error", Error>
-    | Declared<"error2", Error>
-    | Declared<"error3", Error>
-    | Declared<"error4", Error>
-    | Declared<"error5", Error>
-  > {
+  export class CreatePaymentTokenError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      | Declared<"error", Error>
+      | Declared<"error2", Error>
+      | Declared<"error3", Error>
+      | Declared<"error4", Error>
+      | Declared<"error5", Error>
+    >;
+
     static readonly errors: ErrorDecoders<CreatePaymentTokenError> = [
       { on: 400, kind: "error", decode: { kind: "json", schema: errorSchema } },
       { on: 403, kind: "error2", decode: { kind: "json", schema: errorSchema } },
@@ -179,16 +296,23 @@ export namespace Vault {
   }
 
   export type CreateSetupTokenRequest = {
+    /** The server stores keys for 3 hours. */
     payPalRequestId?: string;
+    /**
+     * Setup Token creation with a instrument type optional financial instrument details and
+     * customer_id.
+     */
     body: SetupTokenRequest;
   };
 
-  export class CreateSetupTokenError extends ResponseError<
-    | Declared<"error", Error>
-    | Declared<"error2", Error>
-    | Declared<"error3", Error>
-    | Declared<"error4", Error>
-  > {
+  export class CreateSetupTokenError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      | Declared<"error", Error>
+      | Declared<"error2", Error>
+      | Declared<"error3", Error>
+      | Declared<"error4", Error>
+    >;
+
     static readonly errors: ErrorDecoders<CreateSetupTokenError> = [
       { on: 400, kind: "error", decode: { kind: "json", schema: errorSchema } },
       { on: 403, kind: "error2", decode: { kind: "json", schema: errorSchema } },
@@ -198,12 +322,15 @@ export namespace Vault {
   }
 
   export type DeletePaymentTokenRequest = {
+    /** ID of the payment token. */
     id: string;
   };
 
-  export class DeletePaymentTokenError extends ResponseError<
-    Declared<"error", Error> | Declared<"error2", Error> | Declared<"error3", Error>
-  > {
+  export class DeletePaymentTokenError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error", Error> | Declared<"error2", Error> | Declared<"error3", Error>
+    >;
+
     static readonly errors: ErrorDecoders<DeletePaymentTokenError> = [
       { on: 400, kind: "error", decode: { kind: "json", schema: errorSchema } },
       { on: 403, kind: "error2", decode: { kind: "json", schema: errorSchema } },
@@ -212,15 +339,18 @@ export namespace Vault {
   }
 
   export type GetPaymentTokenRequest = {
+    /** ID of the payment token. */
     id: string;
   };
 
-  export class GetPaymentTokenError extends ResponseError<
-    | Declared<"error", Error>
-    | Declared<"error2", Error>
-    | Declared<"error3", Error>
-    | Declared<"error4", Error>
-  > {
+  export class GetPaymentTokenError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      | Declared<"error", Error>
+      | Declared<"error2", Error>
+      | Declared<"error3", Error>
+      | Declared<"error4", Error>
+    >;
+
     static readonly errors: ErrorDecoders<GetPaymentTokenError> = [
       { on: 403, kind: "error", decode: { kind: "json", schema: errorSchema } },
       { on: 404, kind: "error2", decode: { kind: "json", schema: errorSchema } },
@@ -230,15 +360,18 @@ export namespace Vault {
   }
 
   export type GetSetupTokenRequest = {
+    /** ID of the setup token. */
     id: string;
   };
 
-  export class GetSetupTokenError extends ResponseError<
-    | Declared<"error", Error>
-    | Declared<"error2", Error>
-    | Declared<"error3", Error>
-    | Declared<"error4", Error>
-  > {
+  export class GetSetupTokenError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      | Declared<"error", Error>
+      | Declared<"error2", Error>
+      | Declared<"error3", Error>
+      | Declared<"error4", Error>
+    >;
+
     static readonly errors: ErrorDecoders<GetSetupTokenError> = [
       { on: 403, kind: "error", decode: { kind: "json", schema: errorSchema } },
       { on: 404, kind: "error2", decode: { kind: "json", schema: errorSchema } },
@@ -248,15 +381,34 @@ export namespace Vault {
   }
 
   export type ListCustomerPaymentTokensRequest = {
+    /**
+     * A unique identifier representing a specific customer in merchant's/partner's system or
+     * records.
+     */
     customerId: string;
+    /**
+     * A non-negative, non-zero integer indicating the maximum number of results to return at one
+     * time.
+     *
+     * @default 5
+     */
     pageSize?: number;
+    /** A non-negative, non-zero integer representing the page of the results. @default 1 */
     page?: number;
+    /**
+     * A boolean indicating total number of items (total_items) and pages (total_pages) are expected
+     * to be returned in the response.
+     *
+     * @default false
+     */
     totalRequired?: boolean;
   };
 
-  export class ListCustomerPaymentTokensError extends ResponseError<
-    Declared<"error", Error> | Declared<"error2", Error> | Declared<"error3", Error>
-  > {
+  export class ListCustomerPaymentTokensError extends ApiError {
+    declare readonly payload: ErrorPayload<
+      Declared<"error", Error> | Declared<"error2", Error> | Declared<"error3", Error>
+    >;
+
     static readonly errors: ErrorDecoders<ListCustomerPaymentTokensError> = [
       { on: 400, kind: "error", decode: { kind: "json", schema: errorSchema } },
       { on: 403, kind: "error2", decode: { kind: "json", schema: errorSchema } },

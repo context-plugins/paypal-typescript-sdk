@@ -5,19 +5,60 @@ import { linkDescriptionSchema, type LinkDescription } from "./link-description.
 import { orderStatusSchema, type OrderStatus } from "./order-status.js";
 import { payerSchema, type Payer } from "./payer.js";
 import { paymentSourceResponseSchema, type PaymentSourceResponse } from "./payment-source-response.js";
-import { processingInstructionSchema, type ProcessingInstruction } from "./processing-instruction.js";
 import { purchaseUnitSchema, type PurchaseUnit } from "./purchase-unit.js";
 
+/** The order details. */
 export type Order = {
+  /**
+   * The date and time, in [Internet date and time
+   * format](https://tools.ietf.org/html/rfc3339#section-5.6). Seconds are required while fractional
+   * seconds are optional. Note: The regular expression provides guidance but does not reject all
+   * invalid dates.
+   */
   createTime?: string;
+  /**
+   * The date and time, in [Internet date and time
+   * format](https://tools.ietf.org/html/rfc3339#section-5.6). Seconds are required while fractional
+   * seconds are optional. Note: The regular expression provides guidance but does not reject all
+   * invalid dates.
+   */
   updateTime?: string;
+  /** The ID of the order. */
   id?: string;
+  /** The payment source used to fund the payment. */
   paymentSource?: PaymentSourceResponse;
+  /**
+   * The intent to either capture payment immediately or authorize a payment for an order after
+   * order creation.
+   */
   intent?: CheckoutPaymentIntent;
-  processingInstruction?: ProcessingInstruction;
+  /**
+   * DEPRECATED. The customer is also known as the payer. The Payer object was intended to only be
+   * used with the `payment_source.paypal` object. In order to make this design more clear, the
+   * details in the `payer` object are now available under `payment_source.paypal`. Please use
+   * `payment_source.paypal`.
+   *
+   * @deprecated
+   */
   payer?: Payer;
+  /**
+   * An array of purchase units. Each purchase unit establishes a contract between a customer and
+   * merchant. Each purchase unit represents either a full or partial order that the customer
+   * intends to purchase from the merchant.
+   */
   purchaseUnits?: PurchaseUnit[];
+  /** The order status. */
   status?: OrderStatus;
+  /**
+   * An array of request-related HATEOAS links. To complete payer approval, use the `approve` link
+   * to redirect the payer. The API caller has 6 hours (default setting, this which can be changed
+   * by your account manager to 24/48/72 hours to accommodate your use case) from the time the order
+   * is created, to redirect your payer. Once redirected, the API caller has 6 hours for the payer
+   * to approve the order and either authorize or capture the order. If you are not using the PayPal
+   * JavaScript SDK to initiate PayPal Checkout (in context) ensure that you include
+   * `application_context.return_url` is specified or you will get "We're sorry, Things don't appear
+   * to be working at the moment" after the payer approves the payment.
+   */
   links?: LinkDescription[];
 };
 
@@ -27,7 +68,6 @@ export const orderSchema: Schema<Order> = s.object<Order>({
   id: s.optional(s.string()),
   paymentSource: s.optional(s.lazy(() => paymentSourceResponseSchema)),
   intent: s.optional(s.lazy(() => checkoutPaymentIntentSchema)),
-  processingInstruction: s.optional(s.lazy(() => processingInstructionSchema)),
   payer: s.optional(s.lazy(() => payerSchema)),
   purchaseUnits: s.optional(s.array(s.lazy(() => purchaseUnitSchema))),
   status: s.optional(s.lazy(() => orderStatusSchema)),
@@ -36,7 +76,6 @@ export const orderSchema: Schema<Order> = s.object<Order>({
     createTime: "create_time",
     updateTime: "update_time",
     paymentSource: "payment_source",
-    processingInstruction: "processing_instruction",
     purchaseUnits: "purchase_units",
   },
 });

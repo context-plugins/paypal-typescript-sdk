@@ -1,9 +1,13 @@
 import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 
+/** Identifiers related to a specific resource. */
 export type RelatedIdentifiers = {
+  /** Order ID related to the resource. */
   orderId?: string;
+  /** Authorization ID related to the resource. */
   authorizationId?: string;
+  /** Capture ID related to the resource. */
   captureId?: string;
 };
 

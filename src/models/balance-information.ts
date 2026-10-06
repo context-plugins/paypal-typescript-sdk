@@ -2,11 +2,20 @@ import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 import { moneySchema, type Money } from "./money.js";
 
+/** The Balance information. */
 export type BalanceInformation = {
+  /**
+   * The [three-character ISO-4217 currency code](/docs/integration/direct/rest/currency-codes/)
+   * that identifies the currency.
+   */
   currency: string;
+  /** Optional field representing if the currency is primary currency or not. */
   primary?: boolean;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   totalBalance: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   availableBalance?: Money;
+  /** The currency and amount for a financial transaction, such as a balance or payment due. */
   withheldBalance?: Money;
 };
 

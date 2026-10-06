@@ -5,10 +5,15 @@ import { cardPaymentTokenEntitySchema, type CardPaymentTokenEntity } from "./car
 import { payPalPaymentTokenSchema, type PayPalPaymentToken } from "./pay-pal-payment-token.js";
 import { venmoPaymentTokenSchema, type VenmoPaymentToken } from "./venmo-payment-token.js";
 
+/** The vaulted payment method details. */
 export type PaymentTokenResponsePaymentSource = {
+  /** Full representation of a Card Payment Token including network token. */
   card?: CardPaymentTokenEntity;
+  /** Full representation of a PayPal Payment Token. */
   paypal?: PayPalPaymentToken;
+  /** Full representation of a Venmo Payment Token. */
   venmo?: VenmoPaymentToken;
+  /** A resource representing a response for Apple Pay. */
   applePay?: ApplePayPaymentToken;
 };
 

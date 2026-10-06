@@ -2,11 +2,32 @@ import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 import { eciFlagSchema, type EciFlag } from "./eci-flag.js";
 
+/** The Third Party Network token used to fund a payment. */
 export type NetworkToken = {
+  /** Third party network token number. */
   number: string;
+  /**
+   * The year and month, in ISO-8601 `YYYY-MM` date format. See [Internet date and time
+   * format](https://tools.ietf.org/html/rfc3339#section-5.6).
+   */
   expiry: string;
+  /**
+   * An Encrypted one-time use value that's sent along with Network Token. This field is not
+   * required to be present for recurring transactions.
+   */
   cryptogram?: string;
+  /**
+   * Electronic Commerce Indicator (ECI). The ECI value is part of the 2 data elements that indicate
+   * the transaction was processed electronically. This should be passed on the authorization
+   * transaction to the Gateway/Processor.
+   */
   eciFlag?: EciFlag;
+  /**
+   * A TRID, or a Token Requestor ID, is an identifier used by merchants to request network tokens
+   * from card networks. A TRID is a precursor to obtaining a network token for a credit card
+   * primary account number (PAN), and will aid in enabling secure card on file (COF) payments and
+   * reducing fraud.
+   */
   tokenRequestorId?: string;
 };
 

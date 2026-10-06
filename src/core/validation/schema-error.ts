@@ -1,42 +1,39 @@
 import * as schema from "zod/v4-mini";
 import type { ZodMiniType } from "zod/v4-mini";
-import { CoreError } from "../errors.js";
 import type { Entry, Schema } from "./schema.js";
 
-export type SchemaErrorInit = {
-  message: string;
-  rawBody?: unknown;
-  cause?: unknown;
-};
-
-export class SchemaError extends CoreError {
-  readonly kind = "schema" as const;
-  readonly rawBody: unknown;
-
-  constructor(init: SchemaErrorInit) {
-    super(init.message, init.cause !== undefined ? { cause: init.cause } : undefined);
-    this.rawBody = init.rawBody;
+/**
+ * A value did not match the schema that describes it.
+ *
+ * @remarks
+ * Thrown on both directions by a codec used directly, as in `paymentInputSchema.decode(json)`, so
+ * it names no call. Through an operation the same failure reaches you one level down, on the
+ * `cause` of the `DecodeError` or `EncodeError` that does name the call.
+ *
+ * `message` names the field and the type expected, never the value, and `cause` carries the issue
+ * list with its original paths. The value that failed is not kept.
+ */
+export class SchemaError extends Error {
+  constructor(message: string, cause?: unknown) {
+    super(message, cause === undefined ? undefined : { cause });
+    this.name = new.target.name;
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
 export function decodeWith<T>(zodType: ZodMiniType<T, unknown>, value: unknown): T {
   const result = zodType.safeParse(value);
   if (result.success) return result.data;
-  throw new SchemaError({
-    message: issuesMessage(result.error, value),
-    rawBody: value,
-    cause: result.error,
-  });
+  throw new SchemaError(issuesMessage(result.error, value), result.error);
 }
 
 export function encodeWith<T, W>(zodType: ZodMiniType<T, W>, value: unknown): W {
   const result = schema.safeEncode(zodType, value as T);
   if (result.success) return result.data;
-  throw new SchemaError({
-    message: issuesMessage(result.error, value, "Type could not be encoded for the wire."),
-    rawBody: value,
-    cause: result.error,
-  });
+  throw new SchemaError(
+    issuesMessage(result.error, value, "Type could not be encoded for the wire."),
+    result.error,
+  );
 }
 
 export function decodeEntry<V>(schema: Entry<V>, value: unknown): V {
@@ -75,9 +72,9 @@ function issuesMessage(
 
 function issueReason(issue: SchemaIssue, actual: unknown): string {
   if (issue.expected !== undefined) return `expected ${issue.expected}, received ${typeName(actual)}`;
-  if (issue.format !== undefined) return `expected ${issue.format} format, received ${literal(actual)}`;
+  if (issue.format !== undefined) return `expected ${issue.format} format, received ${typeName(actual)}`;
   if (issue.options !== undefined) {
-    return `expected one of ${issue.options.map(literal).join(" | ")}, received ${literal(actual)}`;
+    return `expected one of ${issue.options.map(literal).join(" | ")}, received ${typeName(actual)}`;
   }
   return issue.message;
 }

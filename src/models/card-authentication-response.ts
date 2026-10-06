@@ -5,7 +5,9 @@ import {
   type ThreeDSecureCardAuthenticationResponse,
 } from "./three-dsecure-card-authentication-response.js";
 
+/** Results of Authentication such as 3D Secure. */
 export type CardAuthenticationResponse = {
+  /** Results of 3D Secure Authentication. */
   threeDSecure?: ThreeDSecureCardAuthenticationResponse;
 };
 

@@ -7,10 +7,22 @@ import {
   type VenmoVaultResponseStatus,
 } from "./venmo-vault-response-status.js";
 
+/** The details about a saved venmo payment source. */
 export type VenmoVaultResponse = {
+  /** The PayPal-generated ID for the saved payment source. */
   id?: string;
+  /**
+   * The vault status.
+   *
+   * @deprecated
+   */
   status?: VenmoVaultResponseStatus;
+  /** An array of request-related HATEOAS links. */
   links?: LinkDescription[];
+  /**
+   * This object represents a merchant’s customer, allowing them to store contact details, and track
+   * all payments associated with the same customer.
+   */
   customer?: CustomerInformation;
 };
 

@@ -5,7 +5,9 @@ import {
   type SepaDebitExperienceContext,
 } from "./sepa-debit-experience-context.js";
 
+/** An API resource denoting a request to securely store a SEPA Debit. */
 export type SepaDebitRequest = {
+  /** Customizes the payer experience during the approval process for the SEPA Debit payment. */
   experienceContext?: SepaDebitExperienceContext;
 };
 

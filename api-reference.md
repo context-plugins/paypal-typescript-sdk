@@ -1,6 +1,6 @@
 # Reference
 
-> Source: [PayPalServerSdkClient](src/client.ts)
+> Source: [PaypalClient](src/client.ts)
 
 ## Orders
 
@@ -22,19 +22,35 @@ Authorizes payment for an order. To successfully authorize payment for an order,
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.orders.authorizeOrder({ id });
+  const response = await client.orders.authorizeOrder({ id: "some example string" });
   // TODO: Handle 'response' of type OrderAuthorizeResponse
 } catch (err) {
-  if (err instanceof Orders.AuthorizeOrderError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.AuthorizeOrderError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.authorizeOrder({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type OrderAuthorizeResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -51,7 +67,7 @@ try {
 | <code>id</code> | <code>string</code> | The ID of the order for which to authorize. |
 | <code>payPalMockResponse?</code> | <code>string</code> | PayPal's REST API uses a request header to invoke negative testing in the sandbox. This header configures the sandbox into a negative testing state for transactions that include the merchant. |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 6 hours. The API callers can request the times to up to 72 hours by speaking to their Account Manager. It is mandatory for all single-step create order calls (E.g. Create Order Request with payment source information like Card, PayPal.vault_id, PayPal.billing_agreement_id, etc). |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalClientMetadataId?</code> | <code>string</code> | - |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see PayPal-Auth-Assertion. |
 | <code>body?</code> | <code>[OrderAuthorizeRequest](src/models/order-authorize-request.ts)</code> | - |
@@ -64,9 +80,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[OrderAuthorizeResponse](src/models/order-authorize-response.ts)</code>
+**Direct**: `await client.orders.authorizeOrder(request)`
 
-**OnError**: <code>[Orders.AuthorizeOrderError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>[OrderAuthorizeResponse](src/models/order-authorize-response.ts)</code>
+- **OnError**: throws <code>[Orders.AuthorizeOrderError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.authorizeOrder(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;OrderAuthorizeResponse, Orders.AuthorizeOrderError&gt;</code>, with `result.value` of type <code>[OrderAuthorizeResponse](src/models/order-authorize-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -92,19 +116,35 @@ Captures payment for an order. To successfully capture payment for an order, the
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.orders.captureOrder({ id });
+  const response = await client.orders.captureOrder({ id: "some example string" });
   // TODO: Handle 'response' of type Order
 } catch (err) {
-  if (err instanceof Orders.CaptureOrderError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.CaptureOrderError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.captureOrder({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Order
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -121,7 +161,7 @@ try {
 | <code>id</code> | <code>string</code> | The ID of the order for which to capture a payment. |
 | <code>payPalMockResponse?</code> | <code>string</code> | PayPal's REST API uses a request header to invoke negative testing in the sandbox. This header configures the sandbox into a negative testing state for transactions that include the merchant. |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 6 hours. The API callers can request the times to up to 72 hours by speaking to their Account Manager. It is mandatory for all single-step create order calls (E.g. Create Order Request with payment source information like Card, PayPal.vault_id, PayPal.billing_agreement_id, etc). |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalClientMetadataId?</code> | <code>string</code> | - |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see PayPal-Auth-Assertion. |
 | <code>body?</code> | <code>[OrderCaptureRequest](src/models/order-capture-request.ts)</code> | - |
@@ -134,9 +174,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Order](src/models/order.ts)</code>
+**Direct**: `await client.orders.captureOrder(request)`
 
-**OnError**: <code>[Orders.CaptureOrderError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>[Order](src/models/order.ts)</code>
+- **OnError**: throws <code>[Orders.CaptureOrderError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.captureOrder(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Order, Orders.CaptureOrderError&gt;</code>, with `result.value` of type <code>[Order](src/models/order.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -162,19 +210,35 @@ Payer confirms their intent to pay for the the Order with the given payment sour
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.orders.confirmOrder({ id });
+  const response = await client.orders.confirmOrder({ id: "some example string" });
   // TODO: Handle 'response' of type Order
 } catch (err) {
-  if (err instanceof Orders.ConfirmOrderError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.ConfirmOrderError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.confirmOrder({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Order
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -191,7 +255,7 @@ try {
 | <code>id</code> | <code>string</code> | The ID of the order for which the payer confirms their intent to pay. |
 | <code>payPalClientMetadataId?</code> | <code>string</code> | - |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see PayPal-Auth-Assertion. |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>body?</code> | <code>[ConfirmOrderRequest](src/models/confirm-order-request.ts)</code> | - |
 
 </dd>
@@ -202,9 +266,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Order](src/models/order.ts)</code>
+**Direct**: `await client.orders.confirmOrder(request)`
 
-**OnError**: <code>[Orders.ConfirmOrderError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>[Order](src/models/order.ts)</code>
+- **OnError**: throws <code>[Orders.ConfirmOrderError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.confirmOrder(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Order, Orders.ConfirmOrderError&gt;</code>, with `result.value` of type <code>[Order](src/models/order.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -230,19 +302,45 @@ Creates an order. Merchants and partners can add Level 2 and 3 data to payments 
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.orders.createOrder({ body });
+  const response = await client.orders.createOrder({
+    body: {
+      intent: CheckoutPaymentIntent.Capture,
+      purchaseUnits: [{ amount: { currencyCode: "some example string", value: "some example string" } }],
+    },
+  });
   // TODO: Handle 'response' of type Order
 } catch (err) {
-  if (err instanceof Orders.CreateOrderError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.CreateOrderError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.createOrder({
+  body: {
+    intent: CheckoutPaymentIntent.Capture,
+    purchaseUnits: [{ amount: { currencyCode: "some example string", value: "some example string" } }],
+  },
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Order
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -260,7 +358,7 @@ try {
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 6 hours. The API callers can request the times to up to 72 hours by speaking to their Account Manager. It is mandatory for all single-step create order calls (E.g. Create Order Request with payment source information like Card, PayPal.vault_id, PayPal.billing_agreement_id, etc). |
 | <code>payPalPartnerAttributionId?</code> | <code>string</code> | - |
 | <code>payPalClientMetadataId?</code> | <code>string</code> | - |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see PayPal-Auth-Assertion. |
 | <code>body</code> | <code>[OrderRequest](src/models/order-request.ts)</code> | - |
 
@@ -272,9 +370,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Order](src/models/order.ts)</code>
+**Direct**: `await client.orders.createOrder(request)`
 
-**OnError**: <code>[Orders.CreateOrderError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>[Order](src/models/order.ts)</code>
+- **OnError**: throws <code>[Orders.CreateOrderError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.createOrder(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Order, Orders.CreateOrderError&gt;</code>, with `result.value` of type <code>[Order](src/models/order.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -300,19 +406,41 @@ Adds tracking information for an Order.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.orders.createOrderTracking({ id, body });
+  const response = await client.orders.createOrderTracking({
+    id: "some example string",
+    body: { captureId: "some example string" },
+  });
   // TODO: Handle 'response' of type Order
 } catch (err) {
-  if (err instanceof Orders.CreateOrderTrackingError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.CreateOrderTrackingError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.createOrderTracking({
+  id: "some example string",
+  body: { captureId: "some example string" },
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Order
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -338,9 +466,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Order](src/models/order.ts)</code>
+**Direct**: `await client.orders.createOrderTracking(request)`
 
-**OnError**: <code>[Orders.CreateOrderTrackingError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>[Order](src/models/order.ts)</code>
+- **OnError**: throws <code>[Orders.CreateOrderTrackingError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.createOrderTracking(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Order, Orders.CreateOrderTrackingError&gt;</code>, with `result.value` of type <code>[Order](src/models/order.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -366,19 +502,35 @@ Shows details for an order, by ID. Note: For error handling and troubleshooting,
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.orders.getOrder({ id });
+  const response = await client.orders.getOrder({ id: "some example string" });
   // TODO: Handle 'response' of type Order
 } catch (err) {
-  if (err instanceof Orders.GetOrderError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.GetOrderError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.getOrder({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Order
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -405,9 +557,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Order](src/models/order.ts)</code>
+**Direct**: `await client.orders.getOrder(request)`
 
-**OnError**: <code>[Orders.GetOrderError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>[Order](src/models/order.ts)</code>
+- **OnError**: throws <code>[Orders.GetOrderError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.getOrder(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Order, Orders.GetOrderError&gt;</code>, with `result.value` of type <code>[Order](src/models/order.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -433,18 +593,34 @@ Updates an order with a `CREATED` or `APPROVED` status. You cannot update an ord
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.orders.patchOrder({ id });
+  await client.orders.patchOrder({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Orders.PatchOrderError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.PatchOrderError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.patchOrder({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -471,9 +647,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.orders.patchOrder(request)`
 
-**OnError**: <code>[Orders.PatchOrderError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Orders.PatchOrderError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.patchOrder(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Orders.PatchOrderError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -499,18 +683,37 @@ Updates or cancels the tracking information for a PayPal order, by ID. Updatable
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.orders.updateOrderTracking({ id, trackerId });
+  await client.orders.updateOrderTracking({ id: "some example string", trackerId: "some example string" });
 } catch (err) {
-  if (err instanceof Orders.UpdateOrderTrackingError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Orders.UpdateOrderTrackingError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.orders.updateOrderTracking({
+  id: "some example string",
+  trackerId: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -537,9 +740,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.orders.updateOrderTracking(request)`
 
-**OnError**: <code>[Orders.UpdateOrderTrackingError](src/resources/orders.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Orders.UpdateOrderTrackingError](src/resources/orders.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.orders.updateOrderTracking(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Orders.UpdateOrderTrackingError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -569,19 +780,37 @@ Captures an authorized payment, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.payments.captureAuthorizedPayment({ authorizationId });
+  const response = await client.payments.captureAuthorizedPayment({ authorizationId: "some example string" });
   // TODO: Handle 'response' of type CapturedPayment
 } catch (err) {
-  if (err instanceof Payments.CaptureAuthorizedPaymentError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Payments.CaptureAuthorizedPaymentError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.payments.captureAuthorizedPayment({
+  authorizationId: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type CapturedPayment
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -598,7 +827,7 @@ try {
 | <code>authorizationId</code> | <code>string</code> | The PayPal-generated ID for the authorized payment to capture. |
 | <code>payPalMockResponse?</code> | <code>string</code> | PayPal's REST API uses a request header to invoke negative testing in the sandbox. This header configures the sandbox into a negative testing state for transactions that include the merchant. |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 45 days. |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see [PayPal-Auth-Assertion](/docs/api/reference/api-requests/#paypal-auth-assertion). Note:For three party transactions in which a partner is managing the API calls on behalf of a merchant, the partner must identify the merchant using either a PayPal-Auth-Assertion header or an access token with target_subject. |
 | <code>body?</code> | <code>[CaptureRequest](src/models/capture-request.ts)</code> | - |
 
@@ -610,9 +839,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[CapturedPayment](src/models/captured-payment.ts)</code>
+**Direct**: `await client.payments.captureAuthorizedPayment(request)`
 
-**OnError**: <code>[Payments.CaptureAuthorizedPaymentError](src/resources/payments.ts)</code>
+- **OnSuccess**: <code>[CapturedPayment](src/models/captured-payment.ts)</code>
+- **OnError**: throws <code>[Payments.CaptureAuthorizedPaymentError](src/resources/payments.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.payments.captureAuthorizedPayment(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;CapturedPayment, Payments.CaptureAuthorizedPaymentError&gt;</code>, with `result.value` of type <code>[CapturedPayment](src/models/captured-payment.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -638,19 +875,37 @@ Shows details for an authorized payment, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.payments.getAuthorizedPayment({ authorizationId });
+  const response = await client.payments.getAuthorizedPayment({ authorizationId: "some example string" });
   // TODO: Handle 'response' of type PaymentAuthorization
 } catch (err) {
-  if (err instanceof Payments.GetAuthorizedPaymentError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Payments.GetAuthorizedPaymentError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.payments.getAuthorizedPayment({
+  authorizationId: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type PaymentAuthorization
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -676,9 +931,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+**Direct**: `await client.payments.getAuthorizedPayment(request)`
 
-**OnError**: <code>[Payments.GetAuthorizedPaymentError](src/resources/payments.ts)</code>
+- **OnSuccess**: <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+- **OnError**: throws <code>[Payments.GetAuthorizedPaymentError](src/resources/payments.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.payments.getAuthorizedPayment(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;PaymentAuthorization, Payments.GetAuthorizedPaymentError&gt;</code>, with `result.value` of type <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -704,19 +967,35 @@ Shows details for a captured payment, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.payments.getCapturedPayment({ captureId });
+  const response = await client.payments.getCapturedPayment({ captureId: "some example string" });
   // TODO: Handle 'response' of type CapturedPayment
 } catch (err) {
-  if (err instanceof Payments.GetCapturedPaymentError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Payments.GetCapturedPaymentError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.payments.getCapturedPayment({ captureId: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type CapturedPayment
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -741,9 +1020,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[CapturedPayment](src/models/captured-payment.ts)</code>
+**Direct**: `await client.payments.getCapturedPayment(request)`
 
-**OnError**: <code>[Payments.GetCapturedPaymentError](src/resources/payments.ts)</code>
+- **OnSuccess**: <code>[CapturedPayment](src/models/captured-payment.ts)</code>
+- **OnError**: throws <code>[Payments.GetCapturedPaymentError](src/resources/payments.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.payments.getCapturedPayment(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;CapturedPayment, Payments.GetCapturedPaymentError&gt;</code>, with `result.value` of type <code>[CapturedPayment](src/models/captured-payment.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -769,19 +1056,35 @@ Shows details for a refund, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.payments.getRefund({ refundId });
+  const response = await client.payments.getRefund({ refundId: "some example string" });
   // TODO: Handle 'response' of type Refund
 } catch (err) {
-  if (err instanceof Payments.GetRefundError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Payments.GetRefundError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.payments.getRefund({ refundId: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Refund
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -807,9 +1110,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Refund](src/models/refund.ts)</code>
+**Direct**: `await client.payments.getRefund(request)`
 
-**OnError**: <code>[Payments.GetRefundError](src/resources/payments.ts)</code>
+- **OnSuccess**: <code>[Refund](src/models/refund.ts)</code>
+- **OnError**: throws <code>[Payments.GetRefundError](src/resources/payments.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.payments.getRefund(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Refund, Payments.GetRefundError&gt;</code>, with `result.value` of type <code>[Refund](src/models/refund.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -835,19 +1146,37 @@ Reauthorizes an authorized PayPal account payment, by ID. To ensure that funds a
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.payments.reauthorizePayment({ authorizationId });
+  const response = await client.payments.reauthorizePayment({ authorizationId: "some example string" });
   // TODO: Handle 'response' of type PaymentAuthorization
 } catch (err) {
-  if (err instanceof Payments.ReauthorizePaymentError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Payments.ReauthorizePaymentError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.payments.reauthorizePayment({
+  authorizationId: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type PaymentAuthorization
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -863,7 +1192,7 @@ try {
 | --- | --- | --- |
 | <code>authorizationId</code> | <code>string</code> | The PayPal-generated ID for the authorized payment to reauthorize. |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 45 days. |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see [PayPal-Auth-Assertion](/docs/api/reference/api-requests/#paypal-auth-assertion). Note:For three party transactions in which a partner is managing the API calls on behalf of a merchant, the partner must identify the merchant using either a PayPal-Auth-Assertion header or an access token with target_subject. |
 | <code>body?</code> | <code>[ReauthorizeRequest](src/models/reauthorize-request.ts)</code> | - |
 
@@ -875,9 +1204,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+**Direct**: `await client.payments.reauthorizePayment(request)`
 
-**OnError**: <code>[Payments.ReauthorizePaymentError](src/resources/payments.ts)</code>
+- **OnSuccess**: <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+- **OnError**: throws <code>[Payments.ReauthorizePaymentError](src/resources/payments.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.payments.reauthorizePayment(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;PaymentAuthorization, Payments.ReauthorizePaymentError&gt;</code>, with `result.value` of type <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -903,19 +1240,37 @@ Refunds a captured payment, by ID. For a full refund, include an empty payload i
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.payments.refundCapturedPayment({ captureId });
+  const response = await client.payments.refundCapturedPayment({ captureId: "some example string" });
   // TODO: Handle 'response' of type Refund
 } catch (err) {
-  if (err instanceof Payments.RefundCapturedPaymentError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Payments.RefundCapturedPaymentError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.payments.refundCapturedPayment({
+  captureId: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Refund
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -932,7 +1287,7 @@ try {
 | <code>captureId</code> | <code>string</code> | The PayPal-generated ID for the captured payment to refund. |
 | <code>payPalMockResponse?</code> | <code>string</code> | PayPal's REST API uses a request header to invoke negative testing in the sandbox. This header configures the sandbox into a negative testing state for transactions that include the merchant. |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 45 days. |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see [PayPal-Auth-Assertion](/docs/api/reference/api-requests/#paypal-auth-assertion). Note:For three party transactions in which a partner is managing the API calls on behalf of a merchant, the partner must identify the merchant using either a PayPal-Auth-Assertion header or an access token with target_subject. |
 | <code>body?</code> | <code>[RefundRequest](src/models/refund-request.ts)</code> | - |
 
@@ -944,9 +1299,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Refund](src/models/refund.ts)</code>
+**Direct**: `await client.payments.refundCapturedPayment(request)`
 
-**OnError**: <code>[Payments.RefundCapturedPaymentError](src/resources/payments.ts)</code>
+- **OnSuccess**: <code>[Refund](src/models/refund.ts)</code>
+- **OnError**: throws <code>[Payments.RefundCapturedPaymentError](src/resources/payments.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.payments.refundCapturedPayment(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Refund, Payments.RefundCapturedPaymentError&gt;</code>, with `result.value` of type <code>[Refund](src/models/refund.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -972,19 +1335,35 @@ Voids, or cancels, an authorized payment, by ID. You cannot void an authorized p
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.payments.voidPayment({ authorizationId });
+  const response = await client.payments.voidPayment({ authorizationId: "some example string" });
   // TODO: Handle 'response' of type PaymentAuthorization
 } catch (err) {
-  if (err instanceof Payments.VoidPaymentError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Payments.VoidPaymentError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.payments.voidPayment({ authorizationId: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type PaymentAuthorization
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1002,7 +1381,7 @@ try {
 | <code>payPalMockResponse?</code> | <code>string</code> | PayPal's REST API uses a request header to invoke negative testing in the sandbox. This header configures the sandbox into a negative testing state for transactions that include the merchant. |
 | <code>payPalAuthAssertion?</code> | <code>string</code> | An API-caller-provided JSON Web Token (JWT) assertion that identifies the merchant. For details, see [PayPal-Auth-Assertion](/docs/api/reference/api-requests/#paypal-auth-assertion). Note:For three party transactions in which a partner is managing the API calls on behalf of a merchant, the partner must identify the merchant using either a PayPal-Auth-Assertion header or an access token with target_subject. |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 45 days. |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 
 </dd>
 </dl>
@@ -1012,9 +1391,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+**Direct**: `await client.payments.voidPayment(request)`
 
-**OnError**: <code>[Payments.VoidPaymentError](src/resources/payments.ts)</code>
+- **OnSuccess**: <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+- **OnError**: throws <code>[Payments.VoidPaymentError](src/resources/payments.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.payments.voidPayment(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;PaymentAuthorization, Payments.VoidPaymentError&gt;</code>, with `result.value` of type <code>[PaymentAuthorization](src/models/payment-authorization.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1044,19 +1431,35 @@ Creates a Payment Token from the given payment source and adds it to the Vault o
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.vault.createPaymentToken({ body });
+  const response = await client.vault.createPaymentToken({ body: { paymentSource: {} } });
   // TODO: Handle 'response' of type PaymentTokenResponse
 } catch (err) {
-  if (err instanceof Vault.CreatePaymentTokenError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Vault.CreatePaymentTokenError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.vault.createPaymentToken({ body: { paymentSource: {} } }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type PaymentTokenResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1081,9 +1484,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[PaymentTokenResponse](src/models/payment-token-response.ts)</code>
+**Direct**: `await client.vault.createPaymentToken(request)`
 
-**OnError**: <code>[Vault.CreatePaymentTokenError](src/resources/vault.ts)</code>
+- **OnSuccess**: <code>[PaymentTokenResponse](src/models/payment-token-response.ts)</code>
+- **OnError**: throws <code>[Vault.CreatePaymentTokenError](src/resources/vault.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.vault.createPaymentToken(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;PaymentTokenResponse, Vault.CreatePaymentTokenError&gt;</code>, with `result.value` of type <code>[PaymentTokenResponse](src/models/payment-token-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1109,19 +1520,35 @@ Creates a Setup Token from the given payment source and adds it to the Vault of 
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.vault.createSetupToken({ body });
+  const response = await client.vault.createSetupToken({ body: { paymentSource: {} } });
   // TODO: Handle 'response' of type SetupTokenResponse
 } catch (err) {
-  if (err instanceof Vault.CreateSetupTokenError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Vault.CreateSetupTokenError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.vault.createSetupToken({ body: { paymentSource: {} } }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type SetupTokenResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1146,9 +1573,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[SetupTokenResponse](src/models/setup-token-response.ts)</code>
+**Direct**: `await client.vault.createSetupToken(request)`
 
-**OnError**: <code>[Vault.CreateSetupTokenError](src/resources/vault.ts)</code>
+- **OnSuccess**: <code>[SetupTokenResponse](src/models/setup-token-response.ts)</code>
+- **OnError**: throws <code>[Vault.CreateSetupTokenError](src/resources/vault.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.vault.createSetupToken(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;SetupTokenResponse, Vault.CreateSetupTokenError&gt;</code>, with `result.value` of type <code>[SetupTokenResponse](src/models/setup-token-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1174,18 +1609,34 @@ Delete the payment token associated with the payment token id.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.vault.deletePaymentToken({ id });
+  await client.vault.deletePaymentToken({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Vault.DeletePaymentTokenError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Vault.DeletePaymentTokenError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.vault.deletePaymentToken({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1209,9 +1660,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.vault.deletePaymentToken(request)`
 
-**OnError**: <code>[Vault.DeletePaymentTokenError](src/resources/vault.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Vault.DeletePaymentTokenError](src/resources/vault.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.vault.deletePaymentToken(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Vault.DeletePaymentTokenError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1237,19 +1696,35 @@ Returns a readable representation of vaulted payment source associated with the 
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.vault.getPaymentToken({ id });
+  const response = await client.vault.getPaymentToken({ id: "some example string" });
   // TODO: Handle 'response' of type PaymentTokenResponse
 } catch (err) {
-  if (err instanceof Vault.GetPaymentTokenError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Vault.GetPaymentTokenError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.vault.getPaymentToken({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type PaymentTokenResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1273,9 +1748,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[PaymentTokenResponse](src/models/payment-token-response.ts)</code>
+**Direct**: `await client.vault.getPaymentToken(request)`
 
-**OnError**: <code>[Vault.GetPaymentTokenError](src/resources/vault.ts)</code>
+- **OnSuccess**: <code>[PaymentTokenResponse](src/models/payment-token-response.ts)</code>
+- **OnError**: throws <code>[Vault.GetPaymentTokenError](src/resources/vault.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.vault.getPaymentToken(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;PaymentTokenResponse, Vault.GetPaymentTokenError&gt;</code>, with `result.value` of type <code>[PaymentTokenResponse](src/models/payment-token-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1301,19 +1784,35 @@ Returns a readable representation of temporarily vaulted payment source associat
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.vault.getSetupToken({ id });
+  const response = await client.vault.getSetupToken({ id: "some example string" });
   // TODO: Handle 'response' of type SetupTokenResponse
 } catch (err) {
-  if (err instanceof Vault.GetSetupTokenError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Vault.GetSetupTokenError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.vault.getSetupToken({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type SetupTokenResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1337,9 +1836,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[SetupTokenResponse](src/models/setup-token-response.ts)</code>
+**Direct**: `await client.vault.getSetupToken(request)`
 
-**OnError**: <code>[Vault.GetSetupTokenError](src/resources/vault.ts)</code>
+- **OnSuccess**: <code>[SetupTokenResponse](src/models/setup-token-response.ts)</code>
+- **OnError**: throws <code>[Vault.GetSetupTokenError](src/resources/vault.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.vault.getSetupToken(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;SetupTokenResponse, Vault.GetSetupTokenError&gt;</code>, with `result.value` of type <code>[SetupTokenResponse](src/models/setup-token-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1365,19 +1872,37 @@ Returns all payment tokens for a customer.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.vault.listCustomerPaymentTokens({ customerId });
+  const response = await client.vault.listCustomerPaymentTokens({ customerId: "some example string" });
   // TODO: Handle 'response' of type CustomerVaultPaymentTokensResponse
 } catch (err) {
-  if (err instanceof Vault.ListCustomerPaymentTokensError && err.payload.kind === "error") {
-    // TODO: Handle 'err.payload.body' of type Error
-  }
+  // TODO: Handle 'err' of type Vault.ListCustomerPaymentTokensError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.vault.listCustomerPaymentTokens({
+  customerId: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type CustomerVaultPaymentTokensResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1392,9 +1917,9 @@ try {
 | Name | Type | Description |
 | --- | --- | --- |
 | <code>customerId</code> | <code>string</code> | A unique identifier representing a specific customer in merchant's/partner's system or records. |
-| <code>pageSize?</code> | <code>number</code> | A non-negative, non-zero integer indicating the maximum number of results to return at one time. |
-| <code>page?</code> | <code>number</code> | A non-negative, non-zero integer representing the page of the results. |
-| <code>totalRequired?</code> | <code>boolean</code> | A boolean indicating total number of items (total_items) and pages (total_pages) are expected to be returned in the response. |
+| <code>pageSize?</code> | <code>number</code> | A non-negative, non-zero integer indicating the maximum number of results to return at one time.<br>**Default**: 5 |
+| <code>page?</code> | <code>number</code> | A non-negative, non-zero integer representing the page of the results.<br>**Default**: 1 |
+| <code>totalRequired?</code> | <code>boolean</code> | A boolean indicating total number of items (total_items) and pages (total_pages) are expected to be returned in the response.<br>**Default**: false |
 
 </dd>
 </dl>
@@ -1404,9 +1929,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[CustomerVaultPaymentTokensResponse](src/models/customer-vault-payment-tokens-response.ts)</code>
+**Direct**: `await client.vault.listCustomerPaymentTokens(request)`
 
-**OnError**: <code>[Vault.ListCustomerPaymentTokensError](src/resources/vault.ts)</code>
+- **OnSuccess**: <code>[CustomerVaultPaymentTokensResponse](src/models/customer-vault-payment-tokens-response.ts)</code>
+- **OnError**: throws <code>[Vault.ListCustomerPaymentTokensError](src/resources/vault.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.vault.listCustomerPaymentTokens(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;CustomerVaultPaymentTokensResponse, Vault.ListCustomerPaymentTokensError&gt;</code>, with `result.value` of type <code>[CustomerVaultPaymentTokensResponse](src/models/customer-vault-payment-tokens-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1436,7 +1969,7 @@ List all balances. Specify date time to list balances for that time that appear 
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
@@ -1446,9 +1979,25 @@ try {
   const response = await client.transactionSearch.searchBalances();
   // TODO: Handle 'response' of type BalancesResponse
 } catch (err) {
-  if (err instanceof TransactionSearch.SearchBalancesError && err.payload.kind === "defaultError") {
-    // TODO: Handle 'err.payload.body' of type DefaultError
-  }
+  // TODO: Handle 'err' of type TransactionSearch.SearchBalancesError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.transactionSearch.searchBalances().asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type BalancesResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1463,7 +2012,7 @@ try {
 | Name | Type | Description |
 | --- | --- | --- |
 | <code>asOfTime?</code> | <code>string</code> | List balances in the response at the date time provided, will return the last refreshed balance in the system when not provided. |
-| <code>currencyCode?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](https://developer.paypal.com/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
+| <code>currencyCode?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
 
 </dd>
 </dl>
@@ -1473,9 +2022,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[BalancesResponse](src/models/balances-response.ts)</code>
+**Direct**: `await client.transactionSearch.searchBalances(request)`
 
-**OnError**: <code>[TransactionSearch.SearchBalancesError](src/resources/transaction-search.ts)</code>
+- **OnSuccess**: <code>[BalancesResponse](src/models/balances-response.ts)</code>
+- **OnError**: throws <code>[TransactionSearch.SearchBalancesError](src/resources/transaction-search.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.transactionSearch.searchBalances(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;BalancesResponse, TransactionSearch.SearchBalancesError&gt;</code>, with `result.value` of type <code>[BalancesResponse](src/models/balances-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1501,19 +2058,41 @@ Lists transactions. Specify one or more query parameters to filter the transacti
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.transactionSearch.searchTransactions({ startDate, endDate });
+  const response = await client.transactionSearch.searchTransactions({
+    startDate: "some example string",
+    endDate: "some example string",
+  });
   // TODO: Handle 'response' of type SearchResponse
 } catch (err) {
-  if (err instanceof TransactionSearch.SearchTransactionsError && err.payload.kind === "searchError") {
-    // TODO: Handle 'err.payload.body' of type SearchError
-  }
+  // TODO: Handle 'err' of type TransactionSearch.SearchTransactionsError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.transactionSearch.searchTransactions({
+  startDate: "some example string",
+  endDate: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type SearchResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1533,14 +2112,14 @@ try {
 | <code>transactionType?</code> | <code>string</code> | Filters the transactions in the response by a PayPal transaction event code. See [Transaction event codes](/docs/integration/direct/transaction-search/transaction-event-codes/). |
 | <code>transactionStatus?</code> | <code>string</code> | Filters the transactions in the response by a PayPal transaction status code. Value is: Status code Description D PayPal or merchant rules denied the transaction. P The transaction is pending. The transaction was created but waits for another payment process to complete, such as an ACH transaction, before the status changes to S. S The transaction successfully completed without a denial and after any pending statuses. V A successful transaction was reversed and funds were refunded to the original sender. |
 | <code>transactionAmount?</code> | <code>string</code> | Filters the transactions in the response by a gross transaction amount range. Specify the range as ` TO `, where ` ` is the lower limit of the gross PayPal transaction amount and ` ` is the upper limit of the gross transaction amount. Specify the amounts in lower denominations. For example, to search for transactions from $5.00 to $10.05, specify `[500 TO 1005]`. Note:The values must be URL encoded. |
-| <code>transactionCurrency?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](https://developer.paypal.com/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
+| <code>transactionCurrency?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
 | <code>paymentInstrumentType?</code> | <code>string</code> | Filters the transactions in the response by a payment instrument type. Value is either: CREDITCARD. Returns a direct credit card transaction with a corresponding value. DEBITCARD. Returns a debit card transaction with a corresponding value. If you omit this parameter, the API does not apply this filter. |
 | <code>storeId?</code> | <code>string</code> | Filters the transactions in the response by a store ID. |
 | <code>terminalId?</code> | <code>string</code> | Filters the transactions in the response by a terminal ID. |
-| <code>fields?</code> | <code>string</code> | Indicates which fields appear in the response. Value is a single field or a comma-separated list of fields. The transaction_info value returns only the transaction details in the response. To include all fields in the response, specify fields=all. Valid fields are: transaction_info. The transaction information. Includes the ID of the PayPal account of the payee, the PayPal-generated transaction ID, the PayPal-generated base ID, the PayPal reference ID type, the transaction event code, the date and time when the transaction was initiated and was last updated, the transaction amounts including the PayPal fee, any discounts, insurance, the transaction status, and other information about the transaction. payer_info. The payer information. Includes the PayPal customer account ID and the payer's email address, primary phone number, name, country code, address, and whether the payer is verified or unverified. shipping_info. The shipping information. Includes the recipient's name, the shipping method for this order, the shipping address for this order, and the secondary address associated with this order. auction_info. The auction information. Includes the name of the auction site, the auction site URL, the ID of the customer who makes the purchase in the auction, and the date and time when the auction closes. cart_info. The cart information. Includes an array of item details, whether the item amount or the shipping amount already includes tax, and the ID of the invoice for PayPal-generated invoices. incentive_info. An array of incentive detail objects. Each object includes the incentive, such as a special offer or coupon, the incentive amount, and the incentive program code that identifies a merchant loyalty or incentive program. store_info. The store information. Includes the ID of the merchant store and the terminal ID for the checkout stand in the merchant store. |
-| <code>balanceAffectingRecordsOnly?</code> | <code>string</code> | Indicates whether the response includes only balance-impacting transactions or all transactions. Value is either: Y. The default. The response includes only balance transactions. N. The response includes all transactions. |
-| <code>pageSize?</code> | <code>number</code> | The number of items to return in the response. So, the combination of `page=1` and `page_size=20` returns the first 20 items. The combination of `page=2` and `page_size=20` returns the next 20 items. |
-| <code>page?</code> | <code>number</code> | The zero-relative start index of the entire list of items that are returned in the response. So, the combination of `page=1` and `page_size=20` returns the first 20 items. |
+| <code>fields?</code> | <code>string</code> | Indicates which fields appear in the response. Value is a single field or a comma-separated list of fields. The transaction_info value returns only the transaction details in the response. To include all fields in the response, specify fields=all. Valid fields are: transaction_info. The transaction information. Includes the ID of the PayPal account of the payee, the PayPal-generated transaction ID, the PayPal-generated base ID, the PayPal reference ID type, the transaction event code, the date and time when the transaction was initiated and was last updated, the transaction amounts including the PayPal fee, any discounts, insurance, the transaction status, and other information about the transaction. payer_info. The payer information. Includes the PayPal customer account ID and the payer's email address, primary phone number, name, country code, address, and whether the payer is verified or unverified. shipping_info. The shipping information. Includes the recipient's name, the shipping method for this order, the shipping address for this order, and the secondary address associated with this order. auction_info. The auction information. Includes the name of the auction site, the auction site URL, the ID of the customer who makes the purchase in the auction, and the date and time when the auction closes. cart_info. The cart information. Includes an array of item details, whether the item amount or the shipping amount already includes tax, and the ID of the invoice for PayPal-generated invoices. incentive_info. An array of incentive detail objects. Each object includes the incentive, such as a special offer or coupon, the incentive amount, and the incentive program code that identifies a merchant loyalty or incentive program. store_info. The store information. Includes the ID of the merchant store and the terminal ID for the checkout stand in the merchant store.<br>**Default**: "transaction_info" |
+| <code>balanceAffectingRecordsOnly?</code> | <code>string</code> | Indicates whether the response includes only balance-impacting transactions or all transactions. Value is either: Y. The default. The response includes only balance transactions. N. The response includes all transactions.<br>**Default**: "Y" |
+| <code>pageSize?</code> | <code>number</code> | The number of items to return in the response. So, the combination of `page=1` and `page_size=20` returns the first 20 items. The combination of `page=2` and `page_size=20` returns the next 20 items.<br>**Default**: 100 |
+| <code>page?</code> | <code>number</code> | The zero-relative start index of the entire list of items that are returned in the response. So, the combination of `page=1` and `page_size=20` returns the first 20 items.<br>**Default**: 1 |
 
 </dd>
 </dl>
@@ -1550,9 +2129,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[SearchResponse](src/models/search-response.ts)</code>
+**Direct**: `await client.transactionSearch.searchTransactions(request)`
 
-**OnError**: <code>[TransactionSearch.SearchTransactionsError](src/resources/transaction-search.ts)</code>
+- **OnSuccess**: <code>[SearchResponse](src/models/search-response.ts)</code>
+- **OnError**: throws <code>[TransactionSearch.SearchTransactionsError](src/resources/transaction-search.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.transactionSearch.searchTransactions(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;SearchResponse, TransactionSearch.SearchTransactionsError&gt;</code>, with `result.value` of type <code>[SearchResponse](src/models/search-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1582,18 +2169,34 @@ Activates a plan, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.activateBillingPlan({ id });
+  await client.subscriptions.activateBillingPlan({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Subscriptions.ActivateBillingPlanError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.ActivateBillingPlanError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.activateBillingPlan({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1617,9 +2220,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.activateBillingPlan(request)`
 
-**OnError**: <code>[Subscriptions.ActivateBillingPlanError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.ActivateBillingPlanError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.activateBillingPlan(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.ActivateBillingPlanError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1645,18 +2256,34 @@ Activates the subscription.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.activateSubscription({ id });
+  await client.subscriptions.activateSubscription({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Subscriptions.ActivateSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.ActivateSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.activateSubscription({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1681,9 +2308,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.activateSubscription(request)`
 
-**OnError**: <code>[Subscriptions.ActivateSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.ActivateSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.activateSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.ActivateSubscriptionError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1709,18 +2344,34 @@ Cancels the subscription.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.cancelSubscription({ id });
+  await client.subscriptions.cancelSubscription({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Subscriptions.CancelSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.CancelSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.cancelSubscription({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1745,9 +2396,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.cancelSubscription(request)`
 
-**OnError**: <code>[Subscriptions.CancelSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.CancelSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.cancelSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.CancelSubscriptionError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1773,19 +2432,35 @@ Captures an authorized payment from the subscriber on the subscription.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.subscriptions.captureSubscription({ id });
+  const response = await client.subscriptions.captureSubscription({ id: "some example string" });
   // TODO: Handle 'response' of type SubscriptionTransactionDetails
 } catch (err) {
-  if (err instanceof Subscriptions.CaptureSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.CaptureSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.captureSubscription({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type SubscriptionTransactionDetails
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1811,9 +2486,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[SubscriptionTransactionDetails](src/models/subscription-transaction-details.ts)</code>
+**Direct**: `await client.subscriptions.captureSubscription(request)`
 
-**OnError**: <code>[Subscriptions.CaptureSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[SubscriptionTransactionDetails](src/models/subscription-transaction-details.ts)</code>
+- **OnError**: throws <code>[Subscriptions.CaptureSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.captureSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;SubscriptionTransactionDetails, Subscriptions.CaptureSubscriptionError&gt;</code>, with `result.value` of type <code>[SubscriptionTransactionDetails](src/models/subscription-transaction-details.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1839,7 +2522,7 @@ Creates a plan that defines pricing and billing cycle details for subscriptions.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
@@ -1849,9 +2532,25 @@ try {
   const response = await client.subscriptions.createBillingPlan();
   // TODO: Handle 'response' of type BillingPlan
 } catch (err) {
-  if (err instanceof Subscriptions.CreateBillingPlanError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.CreateBillingPlanError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.createBillingPlan().asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type BillingPlan
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1865,7 +2564,7 @@ try {
 
 | Name | Type | Description |
 | --- | --- | --- |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 72 hours. |
 | <code>body?</code> | <code>[PlanRequest](src/models/plan-request.ts)</code> | - |
 
@@ -1877,9 +2576,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[BillingPlan](src/models/billing-plan.ts)</code>
+**Direct**: `await client.subscriptions.createBillingPlan(request)`
 
-**OnError**: <code>[Subscriptions.CreateBillingPlanError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[BillingPlan](src/models/billing-plan.ts)</code>
+- **OnError**: throws <code>[Subscriptions.CreateBillingPlanError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.createBillingPlan(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;BillingPlan, Subscriptions.CreateBillingPlanError&gt;</code>, with `result.value` of type <code>[BillingPlan](src/models/billing-plan.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1905,7 +2612,7 @@ Creates a subscription.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
@@ -1915,9 +2622,25 @@ try {
   const response = await client.subscriptions.createSubscription();
   // TODO: Handle 'response' of type Subscription
 } catch (err) {
-  if (err instanceof Subscriptions.CreateSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.CreateSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.createSubscription().asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Subscription
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -1931,7 +2654,7 @@ try {
 
 | Name | Type | Description |
 | --- | --- | --- |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, status and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 | <code>payPalRequestId?</code> | <code>string</code> | The server stores keys for 72 hours. |
 | <code>payPalClientMetadataId?</code> | <code>string</code> | The PayPal Client Metadata Id(CMID) is used to provide device-specific information to PayPal's risk engine. This is crucial for transactions that require device-specific risk assessments. Merchants typically use the Paypal SDK that automatically submits the CMID or they use tools like Fraudnet JS for web or Magnes JS for mobile to generate the CMID on the frontend and then pass it to the API as part of the request headers. |
 | <code>body?</code> | <code>[CreateSubscriptionRequest](src/models/create-subscription-request.ts)</code> | - |
@@ -1944,9 +2667,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Subscription](src/models/subscription.ts)</code>
+**Direct**: `await client.subscriptions.createSubscription(request)`
 
-**OnError**: <code>[Subscriptions.CreateSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[Subscription](src/models/subscription.ts)</code>
+- **OnError**: throws <code>[Subscriptions.CreateSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.createSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Subscription, Subscriptions.CreateSubscriptionError&gt;</code>, with `result.value` of type <code>[Subscription](src/models/subscription.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -1972,18 +2703,34 @@ Deactivates a plan, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.deactivateBillingPlan({ id });
+  await client.subscriptions.deactivateBillingPlan({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Subscriptions.DeactivateBillingPlanError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.DeactivateBillingPlanError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.deactivateBillingPlan({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2007,9 +2754,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.deactivateBillingPlan(request)`
 
-**OnError**: <code>[Subscriptions.DeactivateBillingPlanError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.DeactivateBillingPlanError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.deactivateBillingPlan(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.DeactivateBillingPlanError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2035,19 +2790,35 @@ Shows details for a plan, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.subscriptions.getBillingPlan({ id });
+  const response = await client.subscriptions.getBillingPlan({ id: "some example string" });
   // TODO: Handle 'response' of type BillingPlan
 } catch (err) {
-  if (err instanceof Subscriptions.GetBillingPlanError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.GetBillingPlanError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.getBillingPlan({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type BillingPlan
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2071,9 +2842,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[BillingPlan](src/models/billing-plan.ts)</code>
+**Direct**: `await client.subscriptions.getBillingPlan(request)`
 
-**OnError**: <code>[Subscriptions.GetBillingPlanError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[BillingPlan](src/models/billing-plan.ts)</code>
+- **OnError**: throws <code>[Subscriptions.GetBillingPlanError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.getBillingPlan(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;BillingPlan, Subscriptions.GetBillingPlanError&gt;</code>, with `result.value` of type <code>[BillingPlan](src/models/billing-plan.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2099,19 +2878,35 @@ Shows details for a subscription, by ID.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.subscriptions.getSubscription({ id });
+  const response = await client.subscriptions.getSubscription({ id: "some example string" });
   // TODO: Handle 'response' of type Subscription
 } catch (err) {
-  if (err instanceof Subscriptions.GetSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.GetSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.getSubscription({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type Subscription
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2136,9 +2931,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[Subscription](src/models/subscription.ts)</code>
+**Direct**: `await client.subscriptions.getSubscription(request)`
 
-**OnError**: <code>[Subscriptions.GetSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[Subscription](src/models/subscription.ts)</code>
+- **OnError**: throws <code>[Subscriptions.GetSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.getSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;Subscription, Subscriptions.GetSubscriptionError&gt;</code>, with `result.value` of type <code>[Subscription](src/models/subscription.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2164,7 +2967,7 @@ Lists billing plans.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
@@ -2174,9 +2977,25 @@ try {
   const response = await client.subscriptions.listBillingPlans();
   // TODO: Handle 'response' of type PlanCollection
 } catch (err) {
-  if (err instanceof Subscriptions.ListBillingPlansError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.ListBillingPlansError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.listBillingPlans().asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type PlanCollection
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2191,10 +3010,10 @@ try {
 | Name | Type | Description |
 | --- | --- | --- |
 | <code>productId?</code> | <code>string</code> | Filters the response by a Product ID. |
-| <code>pageSize?</code> | <code>number</code> | The number of items to return in the response. |
-| <code>page?</code> | <code>number</code> | A non-zero integer which is the start index of the entire list of items to return in the response. The combination of `page=1` and `page_size=20` returns the first 20 items. The combination of `page=2` and `page_size=20` returns the next 20 items. |
-| <code>totalRequired?</code> | <code>boolean</code> | Indicates whether to show the total count in the response. |
-| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, name, description and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource. |
+| <code>pageSize?</code> | <code>number</code> | The number of items to return in the response.<br>**Default**: 10 |
+| <code>page?</code> | <code>number</code> | A non-zero integer which is the start index of the entire list of items to return in the response. The combination of `page=1` and `page_size=20` returns the first 20 items. The combination of `page=2` and `page_size=20` returns the next 20 items.<br>**Default**: 1 |
+| <code>totalRequired?</code> | <code>boolean</code> | Indicates whether to show the total count in the response.<br>**Default**: false |
+| <code>prefer?</code> | <code>string</code> | The preferred server response upon successful completion of the request. Value is: return=minimal. The server returns a minimal response to optimize communication between the API caller and the server. A minimal response includes the id, name, description and HATEOAS links. return=representation. The server returns a complete resource representation, including the current state of the resource.<br>**Default**: "return=minimal" |
 
 </dd>
 </dl>
@@ -2204,9 +3023,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[PlanCollection](src/models/plan-collection.ts)</code>
+**Direct**: `await client.subscriptions.listBillingPlans(request)`
 
-**OnError**: <code>[Subscriptions.ListBillingPlansError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[PlanCollection](src/models/plan-collection.ts)</code>
+- **OnError**: throws <code>[Subscriptions.ListBillingPlansError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.listBillingPlans(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;PlanCollection, Subscriptions.ListBillingPlansError&gt;</code>, with `result.value` of type <code>[PlanCollection](src/models/plan-collection.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2232,21 +3059,43 @@ Lists transactions for a subscription.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.subscriptions.listSubscriptionTransactions({ id, startTime, endTime });
+  const response = await client.subscriptions.listSubscriptionTransactions({
+    id: "some example string",
+    startTime: "some example string",
+    endTime: "some example string",
+  });
   // TODO: Handle 'response' of type TransactionsList
 } catch (err) {
-  if (
-    err instanceof Subscriptions.ListSubscriptionTransactionsError && err.payload.kind === "subscriptionError"
-  ) {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.ListSubscriptionTransactionsError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.listSubscriptionTransactions({
+  id: "some example string",
+  startTime: "some example string",
+  endTime: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type TransactionsList
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2272,9 +3121,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[TransactionsList](src/models/transactions-list.ts)</code>
+**Direct**: `await client.subscriptions.listSubscriptionTransactions(request)`
 
-**OnError**: <code>[Subscriptions.ListSubscriptionTransactionsError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[TransactionsList](src/models/transactions-list.ts)</code>
+- **OnError**: throws <code>[Subscriptions.ListSubscriptionTransactionsError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.listSubscriptionTransactions(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;TransactionsList, Subscriptions.ListSubscriptionTransactionsError&gt;</code>, with `result.value` of type <code>[TransactionsList](src/models/transactions-list.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2300,7 +3157,7 @@ List all subscriptions for merchant account.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
@@ -2310,9 +3167,25 @@ try {
   const response = await client.subscriptions.listSubscriptions();
   // TODO: Handle 'response' of type SubscriptionCollection
 } catch (err) {
-  if (err instanceof Subscriptions.ListSubscriptionsError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.ListSubscriptionsError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.listSubscriptions().asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type SubscriptionCollection
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2333,8 +3206,8 @@ try {
 | <code>statusUpdatedBefore?</code> | <code>string</code> | Filters the response by status update start time for a range of subscriptions. |
 | <code>statusUpdatedAfter?</code> | <code>string</code> | Filters the response by status update end time for a range of subscriptions. |
 | <code>filter?</code> | <code>string</code> | Filter the response using complex expressions that could use comparison operators like ge, gt, le, lt and logical operators such as 'and' and 'or'. |
-| <code>pageSize?</code> | <code>number</code> | The number of items to return in the response. |
-| <code>page?</code> | <code>number</code> | A non-zero integer which is the start index of the entire list of items to return in the response. The combination of `page=1` and `page_size=20` returns the first 20 items. The combination of `page=2` and `page_size=20` returns the next 20 items. |
+| <code>pageSize?</code> | <code>number</code> | The number of items to return in the response.<br>**Default**: 10 |
+| <code>page?</code> | <code>number</code> | A non-zero integer which is the start index of the entire list of items to return in the response. The combination of `page=1` and `page_size=20` returns the first 20 items. The combination of `page=2` and `page_size=20` returns the next 20 items.<br>**Default**: 1 |
 | <code>customerIds?</code> | <code>string[]</code> | Filters the response by comma separated vault customer IDs (FSS subscriptions only). |
 
 </dd>
@@ -2345,9 +3218,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[SubscriptionCollection](src/models/subscription-collection.ts)</code>
+**Direct**: `await client.subscriptions.listSubscriptions(request)`
 
-**OnError**: <code>[Subscriptions.ListSubscriptionsError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[SubscriptionCollection](src/models/subscription-collection.ts)</code>
+- **OnError**: throws <code>[Subscriptions.ListSubscriptionsError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.listSubscriptions(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;SubscriptionCollection, Subscriptions.ListSubscriptionsError&gt;</code>, with `result.value` of type <code>[SubscriptionCollection](src/models/subscription-collection.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2373,18 +3254,34 @@ Updates a plan with the `CREATED` or `ACTIVE` status. For an `INACTIVE` plan, yo
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.patchBillingPlan({ id });
+  await client.subscriptions.patchBillingPlan({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Subscriptions.PatchBillingPlanError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.PatchBillingPlanError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.patchBillingPlan({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2409,9 +3306,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.patchBillingPlan(request)`
 
-**OnError**: <code>[Subscriptions.PatchBillingPlanError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.PatchBillingPlanError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.patchBillingPlan(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.PatchBillingPlanError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2437,18 +3342,34 @@ Updates a subscription which could be in ACTIVE or SUSPENDED status. You can ove
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.patchSubscription({ id });
+  await client.subscriptions.patchSubscription({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Subscriptions.PatchSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.PatchSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.patchSubscription({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2473,9 +3394,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.patchSubscription(request)`
 
-**OnError**: <code>[Subscriptions.PatchSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.PatchSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.patchSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.PatchSubscriptionError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2501,19 +3430,35 @@ Updates the quantity of the product or service in a subscription. You can also u
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  const response = await client.subscriptions.reviseSubscription({ id });
+  const response = await client.subscriptions.reviseSubscription({ id: "some example string" });
   // TODO: Handle 'response' of type ModifySubscriptionResponse
 } catch (err) {
-  if (err instanceof Subscriptions.ReviseSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.ReviseSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.reviseSubscription({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: Use 'result.value' of type ModifySubscriptionResponse
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2538,9 +3483,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>[ModifySubscriptionResponse](src/models/modify-subscription-response.ts)</code>
+**Direct**: `await client.subscriptions.reviseSubscription(request)`
 
-**OnError**: <code>[Subscriptions.ReviseSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>[ModifySubscriptionResponse](src/models/modify-subscription-response.ts)</code>
+- **OnError**: throws <code>[Subscriptions.ReviseSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.reviseSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;ModifySubscriptionResponse, Subscriptions.ReviseSubscriptionError&gt;</code>, with `result.value` of type <code>[ModifySubscriptionResponse](src/models/modify-subscription-response.ts)</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2566,18 +3519,34 @@ Suspends the subscription.
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.suspendSubscription({ id });
+  await client.subscriptions.suspendSubscription({ id: "some example string" });
 } catch (err) {
-  if (err instanceof Subscriptions.SuspendSubscriptionError && err.payload.kind === "subscriptionError") {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.SuspendSubscriptionError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.suspendSubscription({ id: "some example string" }).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2602,9 +3571,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.suspendSubscription(request)`
 
-**OnError**: <code>[Subscriptions.SuspendSubscriptionError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.SuspendSubscriptionError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.suspendSubscription(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.SuspendSubscriptionError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>
@@ -2630,21 +3607,36 @@ Updates pricing for a plan. For example, you can update a regular billing cycle 
 </dd>
 </dl>
 
-### Usage
+### Direct Usage
 
 <dl>
 <dd>
 
 ```ts
 try {
-  await client.subscriptions.updateBillingPlanPricingSchemes({ id });
+  await client.subscriptions.updateBillingPlanPricingSchemes({ id: "some example string" });
 } catch (err) {
-  if (
-    err instanceof Subscriptions.UpdateBillingPlanPricingSchemesError &&
-      err.payload.kind === "subscriptionError"
-  ) {
-    // TODO: Handle 'err.payload.body' of type SubscriptionError
-  }
+  // TODO: Handle 'err' of type Subscriptions.UpdateBillingPlanPricingSchemesError, discriminated with 'err.payload.kind'
+}
+```
+
+</dd>
+</dl>
+
+### Usage as ApiResult
+
+<dl>
+<dd>
+
+```ts
+const result = await client.subscriptions.updateBillingPlanPricingSchemes({
+  id: "some example string",
+}).asApiResult();
+// TODO: Use 'result.status' and 'result.headers' to read the raw response status and headers
+if (result.ok) {
+  // TODO: The call succeeded and resolves to no body
+} else {
+  // TODO: Handle 'result', discriminated with 'result.payload.kind'
 }
 ```
 
@@ -2669,9 +3661,17 @@ try {
 <dl>
 <dd>
 
-**OnSuccess**: <code>undefined</code>
+**Direct**: `await client.subscriptions.updateBillingPlanPricingSchemes(request)`
 
-**OnError**: <code>[Subscriptions.UpdateBillingPlanPricingSchemesError](src/resources/subscriptions.ts)</code>
+- **OnSuccess**: <code>undefined</code>
+- **OnError**: throws <code>[Subscriptions.UpdateBillingPlanPricingSchemesError](src/resources/subscriptions.ts)</code>, with `err.payload` discriminated on `kind`
+
+**As ApiResult**: `await client.subscriptions.updateBillingPlanPricingSchemes(request).asApiResult()`
+
+- **OnSuccess**: <code>[ApiResult](src/core/api-promise.ts)&lt;undefined, Subscriptions.UpdateBillingPlanPricingSchemesError&gt;</code>, with `result.value` of type <code>undefined</code>
+- **OnError**: `result.payload` discriminated on `kind`, with `result.message`
+
+**Thrown**: <code>[PaypalError](src/core/errors.ts)</code> on any operational failure — a caller abort and a programmer error stay outside the family and reach you raw
 
 </dd>
 </dl>

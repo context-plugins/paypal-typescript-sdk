@@ -1,7 +1,9 @@
 import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 
+/** Information used to pay using BLIK level_0 flow. */
 export type BlikLevel0PaymentObject = {
+  /** The 6-digit code used to authenticate a consumer within BLIK. */
   authCode: string;
 };
 

@@ -15,20 +15,35 @@ import { sofortPaymentObjectSchema, type SofortPaymentObject } from "./sofort-pa
 import { trustlyPaymentObjectSchema, type TrustlyPaymentObject } from "./trustly-payment-object.js";
 import { venmoWalletResponseSchema, type VenmoWalletResponse } from "./venmo-wallet-response.js";
 
+/** The payment source used to fund the payment. */
 export type PaymentSourceResponse = {
+  /** The payment card to use to fund a payment. Card can be a credit or debit card. */
   card?: CardResponse;
+  /** The PayPal Wallet response. */
   paypal?: PayPalWalletResponse;
+  /** Information used to pay Bancontact. */
   bancontact?: BancontactPaymentObject;
+  /** Information used to pay using BLIK. */
   blik?: BlikPaymentObject;
+  /** Information used to pay using eps. */
   eps?: EpsPaymentObject;
+  /** Information needed to pay using giropay. */
   giropay?: GiropayPaymentObject;
+  /** Information used to pay using iDEAL. */
   ideal?: IDealPaymentObject;
+  /** Information used to pay using MyBank. */
   mybank?: MyBankPaymentObject;
+  /** Information used to pay using P24(Przelewy24). */
   p24?: P24PaymentObject;
+  /** Information used to pay using Sofort. */
   sofort?: SofortPaymentObject;
+  /** Information needed to pay using Trustly. */
   trustly?: TrustlyPaymentObject;
+  /** Information needed to pay using ApplePay. */
   applePay?: ApplePayPaymentObject;
+  /** Google Pay Wallet payment data. */
   googlePay?: GooglePayWalletResponse;
+  /** Venmo wallet response. */
   venmo?: VenmoWalletResponse;
 };
 

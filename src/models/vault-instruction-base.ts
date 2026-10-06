@@ -2,7 +2,12 @@ import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 import { storeInVaultInstructionSchema, type StoreInVaultInstruction } from "./store-in-vault-instruction.js";
 
+/**
+ * Basic vault instruction specification that can be extended by specific payment sources that
+ * supports vaulting.
+ */
 export type VaultInstructionBase = {
+  /** Defines how and when the payment source gets vaulted. */
   storeInVault?: StoreInVaultInstruction;
 };
 
