@@ -8,6 +8,7 @@ import {
 } from "./order-authorize-response-payment-source.js";
 import { orderStatusSchema, type OrderStatus } from "./order-status.js";
 import { payerSchema, type Payer } from "./payer.js";
+import { processingInstructionSchema, type ProcessingInstruction } from "./processing-instruction.js";
 import { purchaseUnitSchema, type PurchaseUnit } from "./purchase-unit.js";
 
 /** The order authorize response. */
@@ -35,6 +36,8 @@ export type OrderAuthorizeResponse = {
    * order creation.
    */
   intent?: CheckoutPaymentIntent;
+  /** The instruction to process an order. */
+  processingInstruction?: ProcessingInstruction;
   /** The customer who approves and pays for the order. The customer is also known as the payer. */
   payer?: Payer;
   /**
@@ -64,6 +67,7 @@ export const orderAuthorizeResponseSchema: Schema<OrderAuthorizeResponse> = s.ob
   id: s.optional(s.string()),
   paymentSource: s.optional(s.lazy(() => orderAuthorizeResponsePaymentSourceSchema)),
   intent: s.optional(s.lazy(() => checkoutPaymentIntentSchema)),
+  processingInstruction: s.optional(s.lazy(() => processingInstructionSchema)),
   payer: s.optional(s.lazy(() => payerSchema)),
   purchaseUnits: s.optional(s.array(s.lazy(() => purchaseUnitSchema))),
   status: s.optional(s.lazy(() => orderStatusSchema)),
@@ -72,6 +76,7 @@ export const orderAuthorizeResponseSchema: Schema<OrderAuthorizeResponse> = s.ob
     createTime: "create_time",
     updateTime: "update_time",
     paymentSource: "payment_source",
+    processingInstruction: "processing_instruction",
     purchaseUnits: "purchase_units",
   },
 });

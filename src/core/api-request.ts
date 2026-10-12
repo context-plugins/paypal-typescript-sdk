@@ -1,5 +1,6 @@
 import type { RequestBody } from "./request-body.js";
 import type { RequestRetryOptions } from "./retry.js";
+import type { RequestLoggingOptions } from "./logging.js";
 import type { ResolvedCoreClientOptions } from "./client-options.js";
 import type { StyledParam, Param, ParamPair } from "./param-value.js";
 
@@ -11,7 +12,7 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | 
  *
  * @remarks
  * Credentials and the server are configured once on the client rather than per call. Three fields
- * of the retry policy are the one thing a single call may shape for itself.
+ * of the retry policy and the log level are the two things a single call may shape for itself.
  */
 export type RequestOptions = {
   /** Cancels the call. Aborting rejects the returned promise with the signal's own `reason`. */
@@ -32,6 +33,17 @@ export type RequestOptions = {
    * rejects the call with a `ConfigurationError` before anything is sent.
    */
   retry?: RequestRetryOptions;
+
+  /**
+   * Sets the log level for this call alone, leaving every other call on the client's.
+   *
+   * @remarks
+   * One field, {@link RequestLoggingOptions}. A level named here decides every line of this call
+   * by itself, the client's `level` and its three switches set aside, so `{ logging: { level:
+   * "debug" } }` logs this one call in full and `{ logging: { level: "off" } }` silences it. A
+   * value that is not a level is dropped and the call logs under the client's settings.
+   */
+  logging?: RequestLoggingOptions;
 };
 
 export type RawClientOptions = ResolvedCoreClientOptions & {

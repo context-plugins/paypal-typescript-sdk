@@ -147,7 +147,8 @@ export namespace TransactionSearch {
     asOfTime?: string;
     /**
      * Filters the transactions in the response by a [three-character ISO-4217 currency
-     * code](/api/rest/reference/currency-codes/) for the PayPal transaction currency.
+     * code](https://developer.paypal.com/api/rest/reference/currency-codes/) for the PayPal
+     * transaction currency.
      */
     currencyCode?: string;
   };
@@ -213,7 +214,8 @@ export namespace TransactionSearch {
     transactionAmount?: string;
     /**
      * Filters the transactions in the response by a [three-character ISO-4217 currency
-     * code](/api/rest/reference/currency-codes/) for the PayPal transaction currency.
+     * code](https://developer.paypal.com/api/rest/reference/currency-codes/) for the PayPal
+     * transaction currency.
      */
     transactionCurrency?: string;
     /**

@@ -237,9 +237,9 @@ export const CoreError = CoreErrorBase as unknown as abstract new (...args: neve
  * `SchemaError` instead, raised by the codec that rejected it.
  *
  * A `retry` field the engine cannot honour is **not** a fourth: it falls back to its default. The
- * `retry` record reaches this error only when reading it throws, as a getter that throws or a
- * revoked proxy does, and that failure is on `cause`. Passed to the constructor, such a record
- * is thrown from it. Passed to one call, it rejects that call before anything is sent.
+ * `retry` and `logging` records reach this error only when reading one throws, as a getter that
+ * throws or a revoked proxy does, and that failure is on `cause`. Passed to the constructor, such a
+ * record is thrown from it. Passed to one call, it rejects that call before anything is sent.
  */
 export class ConfigurationError extends Error {
   constructor(message: string, options?: ErrorOptions) {

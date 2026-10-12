@@ -2833,6 +2833,8 @@ export const ShipmentCarrier = {
   Sfydexpress: "SFYDEXPRESS",
   /** Toptrans. */
   Toptrans: "TOPTRANS",
+  /** Other. */
+  Other: "OTHER",
 } as const;
 export type ShipmentCarrier = (typeof ShipmentCarrier)[keyof typeof ShipmentCarrier] | (string & {});
 

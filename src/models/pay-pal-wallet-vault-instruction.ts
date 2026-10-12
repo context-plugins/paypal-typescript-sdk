@@ -8,10 +8,12 @@ import {
   payPalPaymentTokenUsageTypeSchema,
   type PayPalPaymentTokenUsageType,
 } from "./pay-pal-payment-token-usage-type.js";
+import { storeInVaultInstructionSchema, type StoreInVaultInstruction } from "./store-in-vault-instruction.js";
 import { usagePatternSchema, type UsagePattern } from "./usage-pattern.js";
 
-/** Resource consolidating common request and response attributes for vaulting PayPal Wallet. */
 export type PayPalWalletVaultInstruction = {
+  /** Defines how and when the payment source gets vaulted. */
+  storeInVault?: StoreInVaultInstruction;
   /**
    * The description displayed to PayPal consumer on the approval flow for PayPal, as well as on the
    * PayPal payment token management experience on PayPal.com.
@@ -43,12 +45,14 @@ export type PayPalWalletVaultInstruction = {
 
 export const payPalWalletVaultInstructionSchema: Schema<PayPalWalletVaultInstruction> =
   s.object<PayPalWalletVaultInstruction>({
+    storeInVault: s.optional(s.lazy(() => storeInVaultInstructionSchema)),
     description: s.optional(s.string()),
     usagePattern: s.optional(s.lazy(() => usagePatternSchema)),
     usageType: payPalPaymentTokenUsageTypeSchema,
     customerType: s.defaulted(payPalPaymentTokenCustomerTypeSchema, PayPalPaymentTokenCustomerType.Consumer),
     permitMultiplePaymentTokens: s.defaulted(s.boolean(), false),
     _keysMap: {
+      storeInVault: "store_in_vault",
       usagePattern: "usage_pattern",
       usageType: "usage_type",
       customerType: "customer_type",

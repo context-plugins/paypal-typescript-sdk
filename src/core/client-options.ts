@@ -1,4 +1,5 @@
 import { ConfigurationError } from "./errors.js";
+import { buildLoggingOptions, type LoggingOptions, type ResolvedLoggingOptions } from "./logging.js";
 import { buildRetryOptions, type RetryOptions, type ResolvedRetryOptions } from "./retry.js";
 
 /** The signature a replacement `fetch` must have, which is the global `fetch`'s own. */
@@ -24,29 +25,50 @@ export type CoreClientOptions = {
    */
   readonly retry?: RetryOptions | undefined;
 
-  /** Replaces the global `fetch`. The one extension point for logging, proxying or mocking. */
+  /** Logging of requests, responses and retries. Off by default, see {@link LoggingOptions}. */
+  readonly logging?: LoggingOptions | undefined;
+
+  /**
+   * Replaces the global `fetch`. The one extension point for proxying or mocking.
+   *
+   * @remarks
+   * It is called with one argument, the attempt's `Request`, and no `init`. A replacement must
+   * forward that `Request`, or at least its `signal`, to whatever performs the request: one that
+   * reads `init` forwards nothing, and drops the call's abort and its timeout. To add a header,
+   * copy the `Request` with `new Request(request)` and set it on the copy's `headers`: passing
+   * `{ headers }` to the copy replaces every header the SDK set.
+   */
   readonly fetch?: FetchLike | undefined;
 };
 
 export type ResolvedCoreClientOptions = {
   readonly retry: ResolvedRetryOptions;
+  readonly logging: ResolvedLoggingOptions;
   readonly fetch: FetchLike;
 };
 
 /**
  * Resolves the engine-wide options once, when the client is built, from what the caller passed.
  *
+ * @remarks
+ * `loggingEnvironmentVariable` is the name of the environment variable that can turn logging on.
+ * It is read here, once, and only when `logging` sets neither `logger` nor `level`.
+ *
  * @throws {@link ConfigurationError} when no `fetch` was supplied and the global one is missing,
- * or when reading `retry` throws. No value throws: every bounded field resolves, its own default
- * standing in for a value the engine cannot honour.
+ * or when reading `retry` or `logging` throws. No value throws: every bounded field resolves, its
+ * own default standing in for a value the engine cannot honour.
  */
-export function buildCoreClientOptions(options: CoreClientOptions): ResolvedCoreClientOptions {
+export function buildCoreClientOptions(
+  options: CoreClientOptions,
+  loggingEnvironmentVariable: string,
+): ResolvedCoreClientOptions {
   const fetchImpl = options.fetch ?? globalThis.fetch;
   if (typeof fetchImpl !== "function") {
     throw new ConfigurationError("No fetch implementation available; pass ClientOptions.fetch.");
   }
   return {
     retry: buildRetryOptions(options.retry),
+    logging: buildLoggingOptions(options.logging, loggingEnvironmentVariable),
     fetch: fetchImpl,
   };
 }

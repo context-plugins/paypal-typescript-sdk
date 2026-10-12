@@ -7,6 +7,7 @@ import { buildBody } from "./request-body.js";
 import { RetryPolicy } from "./retry.js";
 import { UrlBuilder } from "./url.js";
 import { HeadersBuilder } from "./headers.js";
+import { HttpLogger } from "./http-logger.js";
 import { authenticateRequest } from "./auth/schemes.js";
 
 export class RawClient {
@@ -33,6 +34,7 @@ export class RawClient {
     responseHandler: ResponseHandler<T, E>,
     options: RequestOptions | undefined,
   ): Promise<RequestOutcome<T, E>> {
+    const startedAt = Date.now();
     const callerSignal = options?.signal ?? neverAbortedSignal();
     const uploadController = new AbortController();
 
@@ -46,69 +48,88 @@ export class RawClient {
       AbortSignal.any([callerSignal, uploadController.signal]),
     );
 
+    const logger = new HttpLogger(
+      options?.logging,
+      this.#config.logging,
+      apiRequest.method,
+      url.withQuery([]),
+    );
     const headers = this.#headersBuilder.build(apiRequest, uri, body);
-
     const policy = new RetryPolicy(options?.retry, this.#config.retry);
-
-    const response = await policy.execute(apiRequest.method, callerSignal, async (timeout) => {
-      const authenticated = await authenticateRequest(
-        apiRequest.method,
-        apiRequest.auth,
-        url,
-        headers,
-        callerSignal,
-      );
-
-      const isStreaming = body.streaming === true;
-      const timeoutController = new AbortController();
-      const signal = AbortSignal.any([callerSignal, timeoutController.signal]);
-      if (isStreaming) {
-        timeoutController.signal.addEventListener(
-          "abort",
-          () => uploadController.abort(timeoutController.signal.reason),
-          { once: true },
+    const response = await policy.execute(
+      apiRequest.method,
+      callerSignal,
+      startedAt,
+      logger,
+      async (timeout) => {
+        const authenticated = await authenticateRequest(
+          apiRequest.method,
+          apiRequest.auth,
+          url,
+          headers,
+          callerSignal,
+          startedAt,
+          logger,
         );
-      }
 
-      const timer = startTimeout(timeoutController, timeout, apiRequest.method, uri);
-      let response: Response;
-      try {
-        response = await this.#config.fetch.call(undefined, authenticated.url, {
+        const isStreaming = body.streaming === true;
+        const timeoutController = new AbortController();
+        const signal = AbortSignal.any([callerSignal, timeoutController.signal]);
+        if (isStreaming) {
+          timeoutController.signal.addEventListener(
+            "abort",
+            () => uploadController.abort(timeoutController.signal.reason),
+            { once: true },
+          );
+        }
+
+        const request = new Request(authenticated.url, {
           method: apiRequest.method,
           headers: authenticated.headers,
           body: body.body,
           signal,
           ...(isStreaming ? { duplex: "half", window: null, redirect: "error" } : {}),
         });
-      } catch (err) {
-        if (err instanceof ConnectionError || err instanceof TimeoutError)
-          return { kind: "fault", error: err, isStreaming };
-        if (err instanceof CoreError) throw err;
-        if (signal.aborted) throw signal.reason;
-        return {
-          kind: "fault",
-          error: new ConnectionError(
-            `${apiRequest.method} ${uri} failed: ${
-              err instanceof Error && err.message !== "" ? err.message : "Connection error."
-            }`,
-            { cause: err, method: apiRequest.method, uri },
-          ),
-          isStreaming,
-        };
-      } finally {
-        clearTimeout(timer);
-      }
+        await logger.logRequest(request);
 
-      if (response.status === 401) apiRequest.auth.invalidate?.();
-      return {
-        kind: "response",
-        response,
-        isStreaming,
-        discard: (): void => {
+        const timer = startTimeout(timeoutController, timeout, apiRequest.method, uri);
+        let response: Response;
+        try {
+          response = await this.#config.fetch.call(undefined, request);
+        } catch (err) {
+          if (err instanceof ConnectionError || err instanceof TimeoutError)
+            return { kind: "fault", error: err, isStreaming };
+          if (err instanceof CoreError) throw err;
+          if (signal.reason instanceof TimeoutError)
+            return { kind: "fault", error: signal.reason, isStreaming };
+          if (signal.aborted) throw signal.reason;
+          return {
+            kind: "fault",
+            error: new ConnectionError(
+              `${apiRequest.method} ${uri} failed: ${
+                err instanceof Error && err.message !== "" ? err.message : "Connection error."
+              }`,
+              { cause: err, method: apiRequest.method, uri },
+            ),
+            isStreaming,
+          };
+        } finally {
+          clearTimeout(timer);
+        }
+
+        const release = (): void => {
           void Promise.resolve(response.body?.cancel()).catch(() => {});
-        },
-      };
-    });
+        };
+        try {
+          logger.logResponse(response);
+        } catch (err) {
+          release();
+          throw err;
+        }
+        if (response.status === 401) apiRequest.auth.invalidate?.();
+        return { kind: "response", response, isStreaming, discard: release };
+      },
+    );
 
     try {
       if (isSuccess(response.status)) {

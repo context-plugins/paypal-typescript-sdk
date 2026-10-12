@@ -19,8 +19,9 @@ export type CardResponseWithBillingAddress = {
    */
   expiry?: string;
   /**
-   * The [three-character ISO-4217 currency code](/api/rest/reference/currency-codes/) that
-   * identifies the currency.
+   * The [three-character ISO-4217 currency
+   * code](https://developer.paypal.com/api/rest/reference/currency-codes/) that identifies the
+   * currency.
    */
   currencyCode?: string;
 };

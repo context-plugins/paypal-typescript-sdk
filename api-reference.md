@@ -2012,7 +2012,7 @@ if (result.ok) {
 | Name | Type | Description |
 | --- | --- | --- |
 | <code>asOfTime?</code> | <code>string</code> | List balances in the response at the date time provided, will return the last refreshed balance in the system when not provided. |
-| <code>currencyCode?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
+| <code>currencyCode?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](https://developer.paypal.com/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
 
 </dd>
 </dl>
@@ -2112,7 +2112,7 @@ if (result.ok) {
 | <code>transactionType?</code> | <code>string</code> | Filters the transactions in the response by a PayPal transaction event code. See [Transaction event codes](/docs/integration/direct/transaction-search/transaction-event-codes/). |
 | <code>transactionStatus?</code> | <code>string</code> | Filters the transactions in the response by a PayPal transaction status code. Value is: Status code Description D PayPal or merchant rules denied the transaction. P The transaction is pending. The transaction was created but waits for another payment process to complete, such as an ACH transaction, before the status changes to S. S The transaction successfully completed without a denial and after any pending statuses. V A successful transaction was reversed and funds were refunded to the original sender. |
 | <code>transactionAmount?</code> | <code>string</code> | Filters the transactions in the response by a gross transaction amount range. Specify the range as ` TO `, where ` ` is the lower limit of the gross PayPal transaction amount and ` ` is the upper limit of the gross transaction amount. Specify the amounts in lower denominations. For example, to search for transactions from $5.00 to $10.05, specify `[500 TO 1005]`. Note:The values must be URL encoded. |
-| <code>transactionCurrency?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
+| <code>transactionCurrency?</code> | <code>string</code> | Filters the transactions in the response by a [three-character ISO-4217 currency code](https://developer.paypal.com/api/rest/reference/currency-codes/) for the PayPal transaction currency. |
 | <code>paymentInstrumentType?</code> | <code>string</code> | Filters the transactions in the response by a payment instrument type. Value is either: CREDITCARD. Returns a direct credit card transaction with a corresponding value. DEBITCARD. Returns a debit card transaction with a corresponding value. If you omit this parameter, the API does not apply this filter. |
 | <code>storeId?</code> | <code>string</code> | Filters the transactions in the response by a store ID. |
 | <code>terminalId?</code> | <code>string</code> | Filters the transactions in the response by a terminal ID. |

@@ -27,6 +27,14 @@ export function runtimeDescription(): string | undefined {
   return node === undefined ? userAgent : `Node.js/${node}`;
 }
 
+export function environmentVariable(name: string): string | undefined {
+  try {
+    return present(runtimeGlobals.process?.env?.[name]?.trim());
+  } catch {
+    return undefined;
+  }
+}
+
 type RuntimeVersions = {
   readonly node?: string;
   readonly bun?: string;
@@ -37,6 +45,7 @@ type NodeProcess = {
   readonly versions?: RuntimeVersions;
   readonly platform?: string;
   readonly arch?: string;
+  readonly env?: Readonly<Record<string, string | undefined>>;
 };
 
 type NavigatorLike = {

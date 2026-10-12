@@ -4,6 +4,7 @@ import { checkoutPaymentIntentSchema, type CheckoutPaymentIntent } from "./check
 import { orderApplicationContextSchema, type OrderApplicationContext } from "./order-application-context.js";
 import { payerSchema, type Payer } from "./payer.js";
 import { paymentSourceSchema, type PaymentSource } from "./payment-source.js";
+import { processingInstructionSchema, type ProcessingInstruction } from "./processing-instruction.js";
 import { purchaseUnitRequestSchema, type PurchaseUnitRequest } from "./purchase-unit-request.js";
 
 /** The order request details. */
@@ -13,6 +14,8 @@ export type OrderRequest = {
    * order creation.
    */
   intent: CheckoutPaymentIntent;
+  /** The instruction to process an order. */
+  processingInstruction?: ProcessingInstruction;
   /**
    * DEPRECATED. The customer is also known as the payer. The Payer object was intended to only be
    * used with the `payment_source.paypal` object. In order to make this design more clear, the
@@ -40,11 +43,13 @@ export type OrderRequest = {
 
 export const orderRequestSchema: Schema<OrderRequest> = s.object<OrderRequest>({
   intent: checkoutPaymentIntentSchema,
+  processingInstruction: s.optional(s.lazy(() => processingInstructionSchema)),
   payer: s.optional(s.lazy(() => payerSchema)),
   purchaseUnits: s.array(s.lazy(() => purchaseUnitRequestSchema)),
   paymentSource: s.optional(s.lazy(() => paymentSourceSchema)),
   applicationContext: s.optional(s.lazy(() => orderApplicationContextSchema)),
   _keysMap: {
+    processingInstruction: "processing_instruction",
     purchaseUnits: "purchase_units",
     paymentSource: "payment_source",
     applicationContext: "application_context",

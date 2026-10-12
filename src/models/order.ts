@@ -5,6 +5,7 @@ import { linkDescriptionSchema, type LinkDescription } from "./link-description.
 import { orderStatusSchema, type OrderStatus } from "./order-status.js";
 import { payerSchema, type Payer } from "./payer.js";
 import { paymentSourceResponseSchema, type PaymentSourceResponse } from "./payment-source-response.js";
+import { processingInstructionSchema, type ProcessingInstruction } from "./processing-instruction.js";
 import { purchaseUnitSchema, type PurchaseUnit } from "./purchase-unit.js";
 
 /** The order details. */
@@ -32,6 +33,8 @@ export type Order = {
    * order creation.
    */
   intent?: CheckoutPaymentIntent;
+  /** The instruction to process an order. */
+  processingInstruction?: ProcessingInstruction;
   /**
    * DEPRECATED. The customer is also known as the payer. The Payer object was intended to only be
    * used with the `payment_source.paypal` object. In order to make this design more clear, the
@@ -68,6 +71,7 @@ export const orderSchema: Schema<Order> = s.object<Order>({
   id: s.optional(s.string()),
   paymentSource: s.optional(s.lazy(() => paymentSourceResponseSchema)),
   intent: s.optional(s.lazy(() => checkoutPaymentIntentSchema)),
+  processingInstruction: s.optional(s.lazy(() => processingInstructionSchema)),
   payer: s.optional(s.lazy(() => payerSchema)),
   purchaseUnits: s.optional(s.array(s.lazy(() => purchaseUnitSchema))),
   status: s.optional(s.lazy(() => orderStatusSchema)),
@@ -76,6 +80,7 @@ export const orderSchema: Schema<Order> = s.object<Order>({
     createTime: "create_time",
     updateTime: "update_time",
     paymentSource: "payment_source",
+    processingInstruction: "processing_instruction",
     purchaseUnits: "purchase_units",
   },
 });

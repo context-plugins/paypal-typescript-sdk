@@ -16,7 +16,9 @@ export type CustomerVaultPaymentTokensResponse = {
    */
   customer?: VaultResponseCustomer;
   paymentTokens?: PaymentTokenResponse[];
-  /** An array of related [HATEOAS links](/api/rest/responses/#hateoas). */
+  /**
+   * An array of related [HATEOAS links](https://developer.paypal.com/api/rest/responses/#hateoas).
+   */
   links?: LinkDescription[];
 };
 

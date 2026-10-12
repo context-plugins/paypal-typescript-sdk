@@ -2,6 +2,7 @@ import type { AuthParams, AuthScheme, HttpMethod } from "../api-request.js";
 import type { BasicAuthCredentials, TokenProvider } from "./credentials.js";
 import type { RequestHeaders } from "../headers.js";
 import type { RequestUrl } from "../url.js";
+import type { HttpLogger } from "../http-logger.js";
 import { AuthError, ConfigurationError, ConnectionError, TimeoutError } from "../errors.js";
 
 const NO_PARAMS: AuthParams = { headers: [], query: [], cookies: [] };
@@ -120,6 +121,8 @@ export async function authenticateRequest(
   url: RequestUrl,
   headers: RequestHeaders,
   signal: AbortSignal,
+  startedAt: number,
+  logger: HttpLogger,
 ): Promise<AuthenticatedRequest> {
   try {
     const credential = await auth.resolve(signal);
@@ -129,14 +132,20 @@ export async function authenticateRequest(
     };
   } catch (err) {
     if (signal.aborted) throw signal.reason;
-    if (err instanceof ConnectionError || err instanceof TimeoutError || err instanceof AuthError) throw err;
+    if (err instanceof ConnectionError || err instanceof TimeoutError) throw err;
+    if (err instanceof AuthError) {
+      logger.logFailure(err, startedAt);
+      throw err;
+    }
     const { uri } = url;
-    throw new AuthError(
+    const error = new AuthError(
       `${method} ${uri} failed: ${
         err instanceof Error && err.message !== "" ? err.message : "A credential could not be obtained."
       }`,
       { cause: err, method, uri },
     );
+    logger.logFailure(error, startedAt);
+    throw error;
   }
 }
 

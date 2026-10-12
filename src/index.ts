@@ -409,6 +409,10 @@ export {
   type PayPalWalletStoredCredential,
 } from "./models/pay-pal-wallet-stored-credential.js";
 export {
+  payPalWalletVaultBaseSchema,
+  type PayPalWalletVaultBase,
+} from "./models/pay-pal-wallet-vault-base.js";
+export {
   payPalWalletVaultInstructionSchema,
   type PayPalWalletVaultInstruction,
 } from "./models/pay-pal-wallet-vault-instruction.js";
@@ -488,6 +492,7 @@ export { platformFeeSchema, type PlatformFee } from "./models/platform-fee.js";
 export { PricingModel, pricingModelSchema } from "./models/pricing-model.js";
 export { pricingSchemeSchema, type PricingScheme } from "./models/pricing-scheme.js";
 export { pricingTierSchema, type PricingTier } from "./models/pricing-tier.js";
+export { ProcessingInstruction, processingInstructionSchema } from "./models/processing-instruction.js";
 export { processorResponseSchema, type ProcessorResponse } from "./models/processor-response.js";
 export { ProcessorResponseCode, processorResponseCodeSchema } from "./models/processor-response-code.js";
 export { purchaseUnitSchema, type PurchaseUnit } from "./models/purchase-unit.js";
@@ -619,6 +624,7 @@ export {
   subscriptionPatchApplicationContextSchema,
   type SubscriptionPatchApplicationContext,
 } from "./models/subscription-patch-application-context.js";
+export { subscriptionPayerSchema, type SubscriptionPayer } from "./models/subscription-payer.js";
 export { subscriptionPayerNameSchema, type SubscriptionPayerName } from "./models/subscription-payer-name.js";
 export {
   subscriptionPaymentSourceSchema,
@@ -684,6 +690,7 @@ export {
   type UpdatePricingSchemesRequest,
 } from "./models/update-pricing-schemes-request.js";
 export { UsagePattern, usagePatternSchema } from "./models/usage-pattern.js";
+export { UsageType, usageTypeSchema } from "./models/usage-type.js";
 export { vaultApplePayRequestSchema, type VaultApplePayRequest } from "./models/vault-apple-pay-request.js";
 export {
   vaultCardExperienceContextSchema,
@@ -784,6 +791,21 @@ export {
 } from "./core/errors.js";
 export { ApiError } from "./core/api-error.js";
 export { SchemaError } from "./core/validation/schema-error.js";
+export {
+  defaultLoggingOptions,
+  type LoggingOptions,
+  type RequestLoggingOptions,
+  type Logger,
+  type LogDetails,
+  type HttpRequestDetails,
+  type RequestHeadersDetails,
+  type RequestBodyDetails,
+  type HttpResponseDetails,
+  type ResponseHeadersDetails,
+  type HttpRetryingDetails,
+  type HttpFailedDetails,
+  type LogLevel,
+} from "./core/logging.js";
 export type { ApiPromise, ApiResult } from "./core/api-promise.js";
 export type { HttpMethod, RequestOptions } from "./core/api-request.js";
 export type { RetryOptions, RequestRetryOptions, RetryAttempt, RetryReason } from "./core/retry.js";

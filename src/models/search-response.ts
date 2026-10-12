@@ -42,7 +42,10 @@ export type SearchResponse = {
    * specified `page_size`.
    */
   totalPages?: number;
-  /** An array of request-related [HATEOAS links](/api/rest/responses/#hateoas-links). */
+  /**
+   * An array of request-related [HATEOAS
+   * links](https://developer.paypal.com/api/rest/responses/#hateoas-links).
+   */
   links?: LinkDescription[];
 };
 

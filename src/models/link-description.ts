@@ -2,7 +2,13 @@ import * as s from "../core/validation/index.js";
 import type { Schema } from "../core/validation/schema.js";
 import { linkHttpMethodSchema, type LinkHttpMethod } from "./link-http-method.js";
 
-/** The request-related [HATEOAS link](/api/rest/responses/#hateoas-links) information. */
+/**
+ * The request-related [HATEOAS
+ * link](https://developer.paypal.com/api/rest/responses/#hateoas-links) information., The
+ * request-related [HATEOAS link](/api/rest/responses/#hateoas-links) information., The
+ * request-related [HATEOAS link](https://developer.paypal.com/api/rest/responses/#hateoas-links)
+ * information.
+ */
 export type LinkDescription = {
   /**
    * The complete target URL. To make the related call, combine the method with this [URI
